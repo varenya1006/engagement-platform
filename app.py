@@ -86,7 +86,8 @@ class HealthScoreEngine:
         avg_session_dur = float(sessions["time_diff"].sum().mean()) if total_sessions > 0 else 0
         unique_features = int(df["feature"].nunique()) if "feature" in df.columns else 0
         last_activity   = df["timestamp"].max()
-        days_since      = (datetime.now(timezone.utc) - last_activity.tz_localize("UTC") if last_activity.tzinfo is None else last_activity).days
+        last_activity_utc = last_activity.tz_localize("UTC") if last_activity.tzinfo is None else last_activity
+        days_since        = (datetime.now(timezone.utc) - last_activity_utc).days
         eps             = total_events / total_sessions if total_sessions > 0 else 0
 
         return {
