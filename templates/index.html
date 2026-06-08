@@ -8,130 +8,171 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg-primary: #0f1117;
-      --bg-secondary: #161922;
-      --bg-tertiary: #1e2130;
-      --bg-elevated: #252a3d;
-      --border-subtle: #2a2f45;
-      --border-hover: #3d4466;
-      --text-primary: #e8eaf0;
-      --text-secondary: #9ca3b8;
-      --text-muted: #6b7280;
-      --text-placeholder: #4b5563;
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1a1f35;
+      --bg-elevated: #222840;
+      --border-subtle: #2a3050;
+      --border-hover: #3d4566;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --text-placeholder: #475569;
       --accent-primary: #6366f1;
-      --accent-secondary: #8b5cf6;
-      --accent-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --accent-secondary: #a855f7;
+      --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7);
+      --accent-glow: rgba(99, 102, 241, 0.15);
       --success: #22c55e;
-      --success-bg: #14532d;
+      --success-bg: rgba(34, 197, 94, 0.12);
       --warning: #f59e0b;
-      --warning-bg: #713f12;
+      --warning-bg: rgba(245, 158, 11, 0.12);
       --danger: #ef4444;
-      --danger-bg: #7f1d1d;
+      --danger-bg: rgba(239, 68, 68, 0.12);
       --info: #06b6d4;
-      --info-bg: #0e4a5c;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-      --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-xl: 20px;
-      --transition-fast: 0.15s ease;
-      --transition-base: 0.25s ease;
+      --info-bg: rgba(6, 182, 212, 0.12);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.6);
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     [data-theme="light"] {
-      --bg-primary: #f8f9fc;
+      --bg-primary: #f8fafc;
       --bg-secondary: #ffffff;
-      --bg-tertiary: #f1f3f9;
-      --bg-elevated: #e8ecf4;
-      --border-subtle: #e2e7ef;
-      --border-hover: #c8d0e0;
-      --text-primary: #1e293b;
-      --text-secondary: #64748b;
+      --bg-tertiary: #f1f5f9;
+      --bg-elevated: #e2e8f0;
+      --border-subtle: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
       --text-muted: #94a3b8;
       --text-placeholder: #cbd5e1;
       --accent-primary: #4f46e5;
       --accent-secondary: #7c3aed;
       --accent-gradient: linear-gradient(135deg, #4f46e5, #7c3aed);
+      --accent-glow: rgba(79, 70, 229, 0.08);
       --success: #16a34a;
-      --success-bg: #dcfce7;
+      --success-bg: rgba(22, 163, 74, 0.08);
       --warning: #d97706;
-      --warning-bg: #fef3c7;
+      --warning-bg: rgba(217, 119, 6, 0.08);
       --danger: #dc2626;
-      --danger-bg: #fee2e2;
+      --danger-bg: rgba(220, 38, 38, 0.08);
       --info: #0891b2;
-      --info-bg: #cffafe;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-      --shadow-lg: 0 8px 24px rgba(0,0,0,0.1);
+      --info-bg: rgba(8, 145, 178, 0.08);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
     }
 
-    * { transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-fast); }
+    * { 
+      transition: background-color var(--transition-base), border-color var(--transition-base), 
+                  color var(--transition-fast), box-shadow var(--transition-base),
+                  transform var(--transition-fast); 
+    }
 
     body {
       background: var(--bg-primary);
       color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
+    /* ===== GAUGE ===== */
     .gauge-wrap { position: relative; display: inline-block; }
-    .gauge-val  { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-                  font-size: 2.2rem; font-weight: 800; color: var(--text-primary); }
-    .gauge-lbl  { font-size: 0.7rem; color: var(--text-muted); margin-top: -2px; }
+    .gauge-val  { 
+      position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+      font-size: 2.4rem; font-weight: 800; 
+      background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gauge-lbl  { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.05em; }
 
+    /* ===== SKELETON ===== */
     @keyframes shimmer {
-      0%   { background-position: -400px 0; }
-      100% { background-position:  400px 0; }
+      0%   { background-position: -500px 0; }
+      100% { background-position:  500px 0; }
     }
     .skeleton {
       background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-elevated) 50%, var(--bg-tertiary) 75%);
-      background-size: 400px 100%;
-      animation: shimmer 1.4s infinite;
+      background-size: 500px 100%;
+      animation: shimmer 1.6s infinite;
       border-radius: var(--radius-sm);
     }
 
+    /* ===== SPINNER ===== */
     @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner { animation: spin .7s linear infinite; }
+    .spinner { animation: spin .8s linear infinite; }
 
-    .pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px;
-            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em; }
-    .pill-low    { background: var(--success-bg); color: var(--success); }
-    .pill-medium { background: var(--warning-bg); color: var(--warning); }
-    .pill-high   { background: var(--danger-bg); color: var(--danger); }
-    .pill-info   { background: var(--info-bg); color: var(--info); }
+    /* ===== PILLS ===== */
+    .pill { 
+      display: inline-flex; align-items: center; gap: 5px; 
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; 
+    }
+    .pill-low    { background: var(--success-bg); color: var(--success); border: 1px solid rgba(34,197,94,0.2); }
+    .pill-medium { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(245,158,11,0.2); }
+    .pill-high   { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+    .pill-info   { background: var(--info-bg); color: var(--info); border: 1px solid rgba(6,182,212,0.2); }
 
-    .tab-btn { transition: all var(--transition-fast); position: relative; padding-bottom: 8px; }
-    .tab-btn::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-                      background: var(--accent-primary); transform: scaleX(0); transition: transform var(--transition-fast); }
-    .tab-btn.active { color: var(--accent-primary); }
-    .tab-btn.active::after { transform: scaleX(1); }
+    /* ===== TABS ===== */
+    .tab-btn { 
+      transition: all var(--transition-fast); position: relative; 
+      padding-bottom: 10px; font-weight: 500;
+    }
+    .tab-btn::after { 
+      content: ''; position: absolute; bottom: 0; left: 50%; right: 50%; height: 2.5px;
+      background: var(--accent-gradient); border-radius: 2px;
+      transition: all var(--transition-fast); 
+    }
+    .tab-btn.active { color: var(--accent-primary); font-weight: 600; }
+    .tab-btn.active::after { left: 0; right: 0; }
     .tab-btn:hover:not(.active) { color: var(--text-secondary); }
 
+    /* ===== CARDS ===== */
     .card {
       background: var(--bg-secondary);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-sm);
       transition: all var(--transition-base);
+      position: relative;
+      overflow: hidden;
     }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-hover), transparent);
+      opacity: 0;
+      transition: opacity var(--transition-base);
+    }
+    .card:hover::before { opacity: 1; }
     .card:hover {
       border-color: var(--border-hover);
       box-shadow: var(--shadow-md);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
 
     .metric-card { transition: all var(--transition-base); }
-    .metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .metric-card:hover { 
+      transform: translateY(-3px); 
+      box-shadow: var(--shadow-md); 
+      border-color: var(--accent-primary);
+    }
 
+    /* ===== INPUTS ===== */
     .input-field {
       background: var(--bg-tertiary);
-      border: 1px solid var(--border-subtle);
+      border: 1.5px solid var(--border-subtle);
       border-radius: var(--radius-sm);
       color: var(--text-primary);
       transition: all var(--transition-fast);
@@ -139,100 +180,241 @@
     .input-field:focus {
       outline: none;
       border-color: var(--accent-primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      box-shadow: 0 0 0 4px var(--accent-glow);
     }
     .input-field::placeholder { color: var(--text-placeholder); }
+    .input-field:hover:not(:focus) { border-color: var(--border-hover); }
 
+    /* ===== BUTTONS ===== */
     .btn-primary {
       background: var(--accent-gradient);
       color: white;
       border-radius: var(--radius-sm);
       font-weight: 600;
       transition: all var(--transition-fast);
-      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+      box-shadow: 0 2px 12px rgba(99, 102, 241, 0.25);
+      position: relative;
+      overflow: hidden;
     }
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4); }
+    .btn-primary::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s;
+    }
+    .btn-primary:hover::after { transform: translateX(100%); }
+    .btn-primary:hover { 
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); 
+      transform: translateY(-1px); 
+    }
     .btn-primary:active { transform: translateY(0); }
 
     .btn-secondary {
       background: var(--bg-tertiary);
       color: var(--text-secondary);
-      border: 1px solid var(--border-subtle);
+      border: 1.5px solid var(--border-subtle);
       border-radius: var(--radius-sm);
       font-weight: 600;
       transition: all var(--transition-fast);
     }
-    .btn-secondary:hover { background: var(--bg-elevated); border-color: var(--border-hover); color: var(--text-primary); }
+    .btn-secondary:hover { 
+      background: var(--bg-elevated); 
+      border-color: var(--border-hover); 
+      color: var(--text-primary); 
+      box-shadow: var(--shadow-sm);
+    }
 
     .btn-ghost {
       background: transparent;
       color: var(--text-muted);
       border-radius: var(--radius-sm);
       transition: all var(--transition-fast);
+      border: 1.5px solid var(--border-subtle);
     }
-    .btn-ghost:hover { background: var(--bg-tertiary); color: var(--text-secondary); }
+    .btn-ghost:hover { 
+      background: var(--bg-tertiary); 
+      color: var(--text-secondary); 
+      border-color: var(--border-hover);
+    }
 
+    /* ===== TOAST ===== */
     #toast {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(12px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(16px) saturate(1.5);
+      -webkit-backdrop-filter: blur(16px) saturate(1.5);
     }
 
+    /* ===== STATUS BADGE ===== */
     .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: 600;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 600;
+      transition: all var(--transition-fast);
     }
-    .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; transition: all var(--transition-fast); }
+    .status-badge .dot.pulse {
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
 
-    .sidebar { background: var(--bg-secondary); border-right: 1px solid var(--border-subtle); }
-    .header { background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle); }
+    /* ===== SIDEBAR & HEADER ===== */
+    .sidebar { 
+      background: var(--bg-secondary); 
+      border-right: 1px solid var(--border-subtle);
+    }
+    .header { 
+      background: rgba(17, 24, 39, 0.8); 
+      border-bottom: 1px solid var(--border-subtle);
+      backdrop-filter: blur(12px) saturate(1.5);
+      -webkit-backdrop-filter: blur(12px) saturate(1.5);
+    }
+    [data-theme="light"] .header {
+      background: rgba(255, 255, 255, 0.8);
+    }
 
+    /* ===== PROGRESS ===== */
     .progress-track {
       background: var(--bg-tertiary);
       border-radius: 999px;
       overflow: hidden;
+      position: relative;
     }
     .progress-fill {
       border-radius: 999px;
-      transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .progress-fill::after {
+      content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 20px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2));
+      border-radius: 999px;
     }
 
+    /* ===== THEME TOGGLE ===== */
     .theme-toggle {
-      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      width: 38px; height: 38px; border-radius: var(--radius-sm);
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: all var(--transition-fast);
-      background: var(--bg-tertiary); border: 1px solid var(--border-subtle);
+      background: var(--bg-tertiary); border: 1.5px solid var(--border-subtle);
+      font-size: 1.1rem;
     }
-    .theme-toggle:hover { background: var(--bg-elevated); border-color: var(--border-hover); }
+    .theme-toggle:hover { 
+      background: var(--bg-elevated); 
+      border-color: var(--accent-primary); 
+      box-shadow: 0 0 12px var(--accent-glow);
+      transform: rotate(15deg);
+    }
 
-    .list-item { transition: all var(--transition-fast); border-radius: var(--radius-sm); }
+    /* ===== LIST ITEMS ===== */
+    .list-item {
+      transition: all var(--transition-fast); border-radius: var(--radius-sm);
+      position: relative;
+    }
+    .list-item::before {
+      content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+      width: 3px; height: 0; border-radius: 0 2px 2px 0;
+      background: var(--accent-primary); transition: height var(--transition-fast);
+    }
+    .list-item:hover::before { height: 60%; }
     .list-item:hover { background: var(--bg-tertiary); }
 
-    .at-risk-item { transition: all var(--transition-fast); cursor: pointer; }
-    .at-risk-item:hover { border-color: var(--accent-primary); background: var(--bg-tertiary); }
+    /* ===== AT-RISK ITEMS ===== */
+    .at-risk-item {
+      transition: all var(--transition-fast); cursor: pointer;
+      position: relative;
+    }
+    .at-risk-item::after {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      border-radius: var(--radius-md) 0 0 var(--radius-md);
+      background: transparent; transition: background var(--transition-fast);
+    }
+    .at-risk-item:hover::after { background: var(--accent-primary); }
+    .at-risk-item:hover { 
+      border-color: var(--accent-primary); 
+      background: var(--bg-tertiary);
+      box-shadow: var(--shadow-md);
+    }
 
+    /* ===== SECTION LABEL ===== */
     .section-label {
       font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.12em; color: var(--text-muted);
+      letter-spacing: 0.14em; color: var(--text-muted);
     }
 
-    .number-display { font-size: 2.5rem; font-weight: 800; line-height: 1; color: var(--text-primary); }
+    /* ===== NUMBER DISPLAY ===== */
+    .number-display { 
+      font-size: 2.8rem; font-weight: 800; line-height: 1; 
+      background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .number-display.plain { 
+      background: none; -webkit-background-clip: initial; -webkit-text-fill-color: initial;
+      color: var(--text-primary);
+    }
 
+    /* ===== ICON BOX ===== */
     .icon-box {
-      width: 40px; height: 40px; border-radius: var(--radius-sm);
-      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+      width: 42px; height: 42px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+      transition: all var(--transition-fast);
     }
 
-    .rec-item { transition: all var(--transition-fast); }
-    .rec-item:hover { border-color: var(--border-hover); transform: translateX(2px); }
+    /* ===== REC ITEMS ===== */
+    .rec-item { transition: all var(--transition-fast); position: relative; }
+    .rec-item::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      border-radius: var(--radius-md) 0 0 var(--radius-md);
+      background: transparent; transition: background var(--transition-fast);
+    }
+    .rec-item:hover::before { background: var(--accent-primary); }
+    .rec-item:hover { border-color: var(--border-hover); transform: translateX(4px); }
 
-    .empty-state-icon { font-size: 3rem; opacity: 0.5; }
+    /* ===== EMPTY STATE ===== */
+    .empty-state-icon { font-size: 3.5rem; opacity: 0.4; filter: grayscale(0.5); }
 
-    .loading-overlay { background: var(--bg-primary); }
+    /* ===== GAP ITEMS ===== */
+    .gap-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: var(--radius-sm);
+      background: var(--bg-tertiary); border: 1px solid var(--border-subtle);
+      transition: all var(--transition-fast);
+    }
+    .gap-item:hover { border-color: var(--warning); background: var(--warning-bg); }
+
+    /* ===== ANIMATED ENTRANCE ===== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in { animation: fadeInUp 0.4s ease forwards; }
+    .animate-in-delay-1 { animation-delay: 0.05s; opacity: 0; }
+    .animate-in-delay-2 { animation-delay: 0.1s; opacity: 0; }
+    .animate-in-delay-3 { animation-delay: 0.15s; opacity: 0; }
+
+    /* ===== SCORE RING ===== */
+    .score-ring {
+      position: relative; width: 160px; height: 160px;
+    }
+    .score-ring svg {
+      transform: rotate(-90deg);
+    }
+    .score-ring .ring-bg { fill: none; stroke: var(--bg-tertiary); stroke-width: 8; }
+    .score-ring .ring-fill { 
+      fill: none; stroke-width: 8; stroke-linecap: round;
+      transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .score-ring .score-text {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .score-ring .score-value {
+      font-size: 2.2rem; font-weight: 800;
+      background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .score-ring .score-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.1em; }
   </style>
 <base target="_blank">
 </head>
@@ -242,24 +424,24 @@
      Header
 ═══════════════════════════════════════════════════════════════════════ -->
 <header class="header px-5 py-3 flex items-center gap-4 sticky top-0 z-40">
-  <div class="icon-box" style="background: var(--accent-gradient); color: white; box-shadow: 0 2px 8px rgba(99,102,241,0.3);">
+  <div class="icon-box" style="background: var(--accent-gradient); color: white; box-shadow: 0 2px 12px rgba(99,102,241,0.3);">
     📊
   </div>
   <div class="flex-1 min-w-0">
-    <h1 class="text-sm font-bold" style="color: var(--text-primary);">Engagement Platform</h1>
+    <h1 class="text-sm font-bold tracking-tight" style="color: var(--text-primary);">Engagement Platform</h1>
     <p class="text-xs" style="color: var(--text-muted);">Health Scores · Gap Detection · AI Recommendations</p>
   </div>
   <div class="flex items-center gap-3">
     <div class="status-badge" id="mongoStatus" style="background: var(--bg-tertiary); color: var(--text-muted);">
-      <span class="dot" style="background: var(--text-muted);"></span>
+      <span class="dot pulse" style="background: var(--text-muted);"></span>
       <span>Checking…</span>
     </div>
     <div class="status-badge" id="openaiStatus" style="background: var(--bg-tertiary); color: var(--text-muted);">
-      <span class="dot" style="background: var(--text-muted);"></span>
+      <span class="dot pulse" style="background: var(--text-muted);"></span>
       <span>OpenAI</span>
     </div>
     <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
-      <span id="themeIcon">🌙</span>
+      <span id="themeIcon">☀️</span>
     </div>
   </div>
 </header>
@@ -267,32 +449,32 @@
 <!-- ═══════════════════════════════════════════════════════════════════════
      Toast
 ═══════════════════════════════════════════════════════════════════════ -->
-<div id="toast" class="fixed top-16 right-4 z-50 px-4 py-3 rounded-lg text-sm font-medium opacity-0 pointer-events-none" style="background: var(--bg-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); box-shadow: var(--shadow-lg);">
+<div id="toast" class="fixed top-16 right-4 z-50 px-5 py-3 rounded-lg text-sm font-semibold opacity-0 pointer-events-none" style="background: rgba(17,24,39,0.9); border: 1px solid var(--border-subtle); color: var(--text-primary); box-shadow: var(--shadow-lg);">
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      Main Layout
 ═══════════════════════════════════════════════════════════════════════ -->
-<div class="flex" style="height: calc(100vh - 60px);">
+<div class="flex" style="height: calc(100vh - 56px);">
 
   <!-- ── Sidebar ── -->
-  <aside class="sidebar w-72 flex flex-col overflow-y-auto flex-shrink-0" style="height: calc(100vh - 60px);">
+  <aside class="sidebar w-72 flex flex-col overflow-y-auto flex-shrink-0" style="height: calc(100vh - 56px);">
 
     <!-- Simulate User -->
     <div class="p-4 border-b" style="border-color: var(--border-subtle);">
       <p class="section-label mb-3">Simulate User</p>
 
-      <label class="block text-xs font-medium mb-1.5" style="color: var(--text-secondary);">User ID</label>
+      <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">User ID</label>
       <input id="userIdInput" type="text" placeholder="e.g. user_42"
-             class="input-field w-full px-3 py-2.5 text-sm mb-3"/>
+             class="input-field w-full px-3.5 py-2.5 text-sm mb-3"/>
 
-      <label class="block text-xs font-medium mb-1.5" style="color: var(--text-secondary);">Sessions</label>
+      <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">Sessions</label>
       <input id="sessionCount" type="number" value="5" min="1" max="30"
-             class="input-field w-full px-3 py-2.5 text-sm mb-3"/>
+             class="input-field w-full px-3.5 py-2.5 text-sm mb-3"/>
 
-      <label class="block text-xs font-medium mb-1.5" style="color: var(--text-secondary);">Days since last activity</label>
+      <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">Days since last activity</label>
       <input id="daysAgo" type="number" value="2" min="0" max="60"
-             class="input-field w-full px-3 py-2.5 text-sm mb-4"/>
+             class="input-field w-full px-3.5 py-2.5 text-sm mb-4"/>
 
       <button onclick="ingestAndAnalyse()" class="btn-primary w-full py-2.5 text-sm">
         ⚡ Ingest &amp; Analyse
@@ -303,7 +485,7 @@
     <div class="p-4 border-b" style="border-color: var(--border-subtle);">
       <p class="section-label mb-3">Load User</p>
       <input id="loadUserInput" type="text" placeholder="Enter user ID"
-             class="input-field w-full px-3 py-2.5 text-sm mb-3"/>
+             class="input-field w-full px-3.5 py-2.5 text-sm mb-3"/>
       <button onclick="loadUser()" class="btn-secondary w-full py-2.5 text-sm">
         🔍 Load Dashboard
       </button>
@@ -317,9 +499,12 @@
 
     <!-- Gap Filter -->
     <div class="p-4 border-t" style="border-color: var(--border-subtle);">
-      <p class="section-label mb-3">Gap Filter</p>
-      <select id="gapFilter" class="input-field w-full px-3 py-2.5 text-sm mb-3">
-        <option value="">All gaps</option>
+      <p class="section-label mb-3">Risk Filter</p>
+      <select id="gapFilter" class="input-field w-full px-3.5 py-2.5 text-sm mb-3">
+        <option value="">All risk levels</option>
+        <option value="high">🔴 High Risk</option>
+        <option value="medium">🟡 Medium Risk</option>
+        <option value="low">🟢 Low Risk</option>
         <option value="inactive_week">Inactive > 1 week</option>
         <option value="low_feature_adoption">Low feature adoption</option>
         <option value="low_session_count">Low session count</option>
@@ -334,15 +519,15 @@
   <main class="flex-1 overflow-y-auto p-6 space-y-6">
 
     <!-- Loading state -->
-    <div id="loadingState" class="hidden flex flex-col items-center justify-center h-full gap-4">
-      <div class="spinner w-10 h-10 border-2 rounded-full" style="border-color: var(--border-subtle); border-top-color: var(--accent-primary);"></div>
-      <p id="loadingMsg" class="text-sm" style="color: var(--text-muted);">Fetching data…</p>
+    <div id="loadingState" class="hidden flex flex-col items-center justify-center h-full gap-5">
+      <div class="spinner w-12 h-12 border-[3px] rounded-full" style="border-color: var(--border-subtle); border-top-color: var(--accent-primary);"></div>
+      <p id="loadingMsg" class="text-sm font-medium" style="color: var(--text-muted);">Fetching data…</p>
     </div>
 
     <!-- Empty state -->
-    <div id="emptyState" class="flex flex-col items-center justify-center h-full gap-4">
+    <div id="emptyState" class="flex flex-col items-center justify-center h-full gap-5">
       <div class="empty-state-icon">📈</div>
-      <p class="text-sm" style="color: var(--text-muted);">
+      <p class="text-sm text-center max-w-sm" style="color: var(--text-muted);">
         Enter a User ID and click <span style="color: var(--accent-primary); font-weight: 600;">Ingest &amp; Analyse</span> to begin.
       </p>
     </div>
@@ -351,27 +536,27 @@
     <div id="dashContent" class="hidden space-y-6">
 
       <!-- User header -->
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between animate-in">
         <div class="flex items-center gap-3">
-          <div class="icon-box" style="background: var(--accent-gradient); color: white;">
+          <div class="icon-box" style="background: var(--accent-gradient); color: white; box-shadow: 0 2px 12px rgba(99,102,241,0.25);">
             👤
           </div>
           <div>
-            <h2 id="dashUserId" class="text-lg font-bold" style="color: var(--text-primary);"></h2>
+            <h2 id="dashUserId" class="text-lg font-bold tracking-tight" style="color: var(--text-primary);"></h2>
             <p id="dashComputedAt" class="text-xs" style="color: var(--text-muted);"></p>
           </div>
         </div>
-        <button onclick="refreshRecommendations()" class="btn-ghost px-4 py-2 text-sm font-semibold" style="border: 1px solid var(--border-subtle);">
+        <button onclick="refreshRecommendations()" class="btn-ghost px-4 py-2 text-sm font-semibold">
           🤖 Refresh AI Recs
         </button>
       </div>
 
       <!-- Tabs -->
-      <div class="flex gap-6 border-b" style="border-color: var(--border-subtle);">
-        <button class="tab-btn active pb-3 text-sm font-medium" style="color: var(--text-secondary);" onclick="switchTab('overview',this)">Overview</button>
-        <button class="tab-btn pb-3 text-sm font-medium" style="color: var(--text-muted);" onclick="switchTab('metrics',this)">Metrics</button>
-        <button class="tab-btn pb-3 text-sm font-medium" style="color: var(--text-muted);" onclick="switchTab('recs',this)">Recommendations</button>
-        <button class="tab-btn pb-3 text-sm font-medium" style="color: var(--text-muted);" onclick="switchTab('trend',this)">Score Trend</button>
+      <div class="flex gap-6 border-b animate-in animate-in-delay-1" style="border-color: var(--border-subtle);">
+        <button class="tab-btn active text-sm" style="color: var(--accent-primary);" onclick="switchTab('overview',this)">Overview</button>
+        <button class="tab-btn text-sm" style="color: var(--text-muted);" onclick="switchTab('metrics',this)">Metrics</button>
+        <button class="tab-btn text-sm" style="color: var(--text-muted);" onclick="switchTab('recs',this)">Recommendations</button>
+        <button class="tab-btn text-sm" style="color: var(--text-muted);" onclick="switchTab('trend',this)">Score Trend</button>
       </div>
 
       <!-- ── TAB: Overview ── -->
@@ -381,36 +566,49 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
           <!-- Health Score Gauge -->
-          <div class="card p-6 flex flex-col items-center justify-center">
+          <div class="card p-6 flex flex-col items-center justify-center animate-in">
             <p class="section-label mb-4">Health Score</p>
-            <div class="gauge-wrap">
-              <canvas id="gaugeChart" width="200" height="110"></canvas>
-              <div class="gauge-val" id="gaugeVal">—</div>
-            </div>
-            <p class="gauge-lbl">out of 100</p>
-          </div>
-
-          <!-- Churn Risk -->
-          <div class="card p-6 flex flex-col justify-between">
-            <p class="section-label">Churn Risk</p>
-            <div class="mt-4">
-              <div class="number-display" id="churnScore">—</div>
-              <div class="mt-2" id="churnBadge"></div>
-              <div class="mt-5 progress-track h-2.5">
-                <div id="churnBar" class="progress-fill h-full" style="width:0%"></div>
+            <div class="score-ring" id="scoreRing">
+              <svg width="160" height="160" viewBox="0 0 160 160">
+                <circle class="ring-bg" cx="80" cy="80" r="70"/>
+                <circle class="ring-fill" id="ringFill" cx="80" cy="80" r="70" 
+                        stroke="url(#ringGradient)" stroke-dasharray="440" stroke-dashoffset="440"/>
+                <defs>
+                  <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#6366f1"/>
+                    <stop offset="100%" style="stop-color:#a855f7"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="score-text">
+                <div class="score-value" id="scoreValue">—</div>
+                <div class="score-label">OUT OF 100</div>
               </div>
             </div>
           </div>
 
+          <!-- Churn Risk -->
+          <div class="card p-6 flex flex-col justify-between animate-in animate-in-delay-1">
+            <p class="section-label">Churn Risk</p>
+            <div class="mt-4">
+              <div class="number-display plain" id="churnScore">—</div>
+              <div class="mt-2" id="churnBadge"></div>
+              <div class="mt-5 progress-track h-3">
+                <div id="churnBar" class="progress-fill h-full" style="width:0%"></div>
+              </div>
+              <p class="text-xs mt-2" style="color: var(--text-muted);">Probability of user churning in next 30 days</p>
+            </div>
+          </div>
+
           <!-- Engagement Gaps -->
-          <div class="card p-6">
+          <div class="card p-6 animate-in animate-in-delay-2">
             <p class="section-label mb-4">Engagement Gaps</p>
-            <div id="gapsList" class="space-y-3"></div>
+            <div id="gapsList" class="space-y-2.5"></div>
           </div>
         </div>
 
         <!-- Component Scores -->
-        <div class="card p-6">
+        <div class="card p-6 animate-in animate-in-delay-3">
           <p class="section-label mb-4">Score Components</p>
           <canvas id="componentChart" height="90"></canvas>
         </div>
@@ -424,7 +622,7 @@
       <!-- ── TAB: Recommendations ── -->
       <div id="tab-recs" class="hidden space-y-4">
         <div id="recsList" class="space-y-3"></div>
-        <p id="recsModel" class="text-xs" style="color: var(--text-muted);"></p>
+        <p id="recsModel" class="text-xs font-mono" style="color: var(--text-muted);"></p>
       </div>
 
       <!-- ── TAB: Trend ── -->
@@ -442,12 +640,15 @@
 
     <!-- At-risk panel -->
     <div id="atRiskPanel" class="hidden space-y-4">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between animate-in">
         <div class="flex items-center gap-3">
           <div class="icon-box" style="background: var(--danger-bg); color: var(--danger);">⚠️</div>
-          <h2 class="text-base font-bold" style="color: var(--text-primary);">At-Risk Users</h2>
+          <div>
+            <h2 class="text-base font-bold tracking-tight" style="color: var(--text-primary);">At-Risk Users</h2>
+            <p class="text-xs" style="color: var(--text-muted);">Users showing engagement gaps</p>
+          </div>
         </div>
-        <button onclick="hideAtRisk()" class="btn-ghost px-3 py-1.5 text-xs">✕ Close</button>
+        <button onclick="hideAtRisk()" class="btn-ghost px-3 py-1.5 text-xs font-semibold">✕ Close</button>
       </div>
       <div id="atRiskList" class="space-y-2"></div>
     </div>
@@ -471,7 +672,6 @@ function toggleTheme() {
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('theme', next);
   updateThemeIcon(next);
-  // Re-render charts to pick up new colors
   if (currentUserId) {
     renderDashboard(currentUserId);
   }
@@ -484,9 +684,9 @@ function updateThemeIcon(theme) {
 function getChartColors() {
   const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
   return {
-    grid: isDark ? '#2a2f45' : '#e2e7ef',
-    ticks: isDark ? '#6b7280' : '#64748b',
-    text: isDark ? '#e8eaf0' : '#1e293b',
+    grid: isDark ? '#2a3050' : '#e2e8f0',
+    ticks: isDark ? '#64748b' : '#475569',
+    text: isDark ? '#f1f5f9' : '#0f172a',
   };
 }
 
@@ -506,7 +706,7 @@ function toast(msg, ok=true) {
   el.style.color = 'white';
   el.style.opacity = '1';
   el.style.pointerEvents = 'auto';
-  setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }, 2800);
+  setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }, 3000);
 }
 
 function setLoading(msg='Loading…') {
@@ -534,7 +734,12 @@ function showEmpty() {
 
 async function api(url, opts={}) {
   const r = await fetch(url, { headers: {'Content-Type':'application/json'}, ...opts });
-  if (!r.ok) { const e = await r.json(); throw new Error(e.error || r.statusText); }
+  if (!r.ok) { 
+    const text = await r.text();
+    let e;
+    try { e = JSON.parse(text); } catch { e = { error: text || r.statusText }; }
+    throw new Error(e.error || r.statusText); 
+  }
   return r.json();
 }
 
@@ -551,20 +756,24 @@ async function checkHealth() {
       mongoEl.innerHTML = '<span class="dot" style="background: var(--success);"></span><span>MongoDB</span>';
       mongoEl.style.background = 'var(--success-bg)';
       mongoEl.style.color = 'var(--success)';
+      mongoEl.style.border = '1px solid rgba(34,197,94,0.2)';
     } else {
       mongoEl.innerHTML = '<span class="dot" style="background: var(--danger);"></span><span>MongoDB ✗</span>';
       mongoEl.style.background = 'var(--danger-bg)';
       mongoEl.style.color = 'var(--danger)';
+      mongoEl.style.border = '1px solid rgba(239,68,68,0.2)';
     }
 
     if (d.openai_configured) {
       openaiEl.innerHTML = '<span class="dot" style="background: var(--success);"></span><span>OpenAI</span>';
       openaiEl.style.background = 'var(--success-bg)';
       openaiEl.style.color = 'var(--success)';
+      openaiEl.style.border = '1px solid rgba(34,197,94,0.2)';
     } else {
       openaiEl.innerHTML = '<span class="dot" style="background: var(--warning);"></span><span>OpenAI (rule-based)</span>';
       openaiEl.style.background = 'var(--warning-bg)';
       openaiEl.style.color = 'var(--warning)';
+      openaiEl.style.border = '1px solid rgba(245,158,11,0.2)';
     }
   } catch {}
 }
@@ -687,9 +896,16 @@ function renderOverview(hs) {
   const churn = hs.churn_risk;
   const c = getChartColors();
 
-  // Gauge
-  document.getElementById('gaugeVal').textContent = score;
-  drawGauge(score);
+  // Score Ring (SVG)
+  document.getElementById('scoreValue').textContent = score;
+  const circumference = 2 * Math.PI * 70; // ~440
+  const offset = circumference - (score / 100) * circumference;
+  const ringFill = document.getElementById('ringFill');
+  ringFill.style.strokeDashoffset = offset;
+
+  // Color the ring based on score
+  const ringColor = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444';
+  ringFill.setAttribute('stroke', ringColor);
 
   // Churn
   document.getElementById('churnScore').textContent = churn.score.toFixed(1);
@@ -704,11 +920,19 @@ function renderOverview(hs) {
   const gl = document.getElementById('gapsList');
   const gaps = hs.engagement_gaps || [];
   if (!gaps.length) {
-    gl.innerHTML = '<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full" style="background: var(--success);"></span><span style="color: var(--success); font-size: 0.875rem;">✅ No gaps detected</span></div>';
+    gl.innerHTML = `
+      <div class="gap-item" style="border-color: var(--success); background: var(--success-bg);">
+        <span class="w-2 h-2 rounded-full flex-shrink-0" style="background: var(--success);"></span>
+        <span style="color: var(--success); font-size: 0.875rem; font-weight: 500;">✅ All metrics healthy</span>
+      </div>`;
   } else {
-    const labels = { inactive_week:'Inactive > 1 week', low_feature_adoption:'Low feature adoption', low_session_count:'Low session count' };
+    const labels = { 
+      inactive_week:'Inactive > 1 week — user may be churning', 
+      low_feature_adoption:'Low feature adoption — explore more modules', 
+      low_session_count:'Low session count — build usage habit' 
+    };
     gl.innerHTML = gaps.map(g =>
-      `<div class="flex items-center gap-3">
+      `<div class="gap-item">
         <span class="w-2 h-2 rounded-full flex-shrink-0" style="background: var(--warning);"></span>
         <span style="color: var(--text-secondary); font-size: 0.875rem;">${labels[g] || g}</span>
       </div>`
@@ -719,7 +943,7 @@ function renderOverview(hs) {
   const comp = hs.component_scores;
   const labels2 = ['Activity','Session Depth','Features','Recency'];
   const values  = [comp.activity_frequency, comp.session_depth, comp.feature_adoption, comp.recency];
-  const colors  = ['#6366f1','#8b5cf6','#06b6d4','#10b981'];
+  const colors  = ['#6366f1','#a855f7','#06b6d4','#10b981'];
 
   if (componentChartInst) componentChartInst.destroy();
   const ctx = document.getElementById('componentChart').getContext('2d');
@@ -727,36 +951,28 @@ function renderOverview(hs) {
     type: 'bar',
     data: {
       labels: labels2,
-      datasets: [{ data: values, backgroundColor: colors, borderRadius: 6, borderSkipped: false }],
+      datasets: [{ 
+        data: values, 
+        backgroundColor: colors, 
+        borderRadius: 8, 
+        borderSkipped: false,
+        barThickness: 40,
+      }],
     },
     options: {
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: c.ticks, font: { size: 11 } }, grid: { color: c.grid } },
-        y: { min: 0, max: 100, ticks: { color: c.ticks, font: { size: 11 } }, grid: { color: c.grid } },
+        x: { 
+          ticks: { color: c.ticks, font: { size: 12, weight: '500' } }, 
+          grid: { display: false } 
+        },
+        y: { 
+          min: 0, max: 100, 
+          ticks: { color: c.ticks, font: { size: 11 } }, 
+          grid: { color: c.grid, drawBorder: false } 
+        },
       },
     },
-  });
-}
-
-function drawGauge(score) {
-  if (gaugeChartInst) gaugeChartInst.destroy();
-  const ctx = document.getElementById('gaugeChart').getContext('2d');
-  const filled = score / 100;
-  const color  = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444';
-  const bgColor = document.documentElement.getAttribute('data-theme') === 'light' ? '#e2e7ef' : '#1e2130';
-  gaugeChartInst = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      datasets: [{
-        data: [filled, 1 - filled],
-        backgroundColor: [color, bgColor],
-        borderWidth: 0,
-        circumference: 180,
-        rotation: 270,
-      }],
-    },
-    options: { cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } },
   });
 }
 
@@ -771,10 +987,10 @@ function renderMetrics(metrics) {
     { key:'events_per_session',       label:'Events / Session',        icon:'⚡', fmt: v=>v.toFixed(1) },
   ];
   const grid = document.getElementById('metricsGrid');
-  grid.innerHTML = defs.map(d =>
-    `<div class="card p-5 metric-card">
+  grid.innerHTML = defs.map((d, i) =>
+    `<div class="card p-5 metric-card animate-in" style="animation-delay: ${i * 0.05}s;">
       <p class="section-label">${d.icon} ${d.label}</p>
-      <p class="number-display mt-3">${d.fmt(metrics[d.key] ?? 0)}</p>
+      <p class="number-display plain mt-3">${d.fmt(metrics[d.key] ?? 0)}</p>
     </div>`
   ).join('');
 }
@@ -783,10 +999,11 @@ function renderMetrics(metrics) {
 function renderRecs(recs, model='') {
   const impacts = { high:'pill-low', medium:'pill-medium', low:'pill-high' };
   document.getElementById('recsList').innerHTML = recs.map((r,i) =>
-    `<div class="card p-5 rec-item flex gap-4">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0" style="background: var(--accent-primary); color: white;">${i+1}</div>
-      <div>
-        <p style="color: var(--text-primary); font-size: 0.875rem;">${r.action}</p>
+    `<div class="card p-5 rec-item flex gap-4 animate-in" style="animation-delay: ${i * 0.05}s;">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0" 
+           style="background: var(--accent-gradient); color: white; box-shadow: 0 2px 8px rgba(99,102,241,0.3);">${i+1}</div>
+      <div class="flex-1">
+        <p style="color: var(--text-primary); font-size: 0.9rem; line-height: 1.5;">${r.action}</p>
         <span class="pill mt-2 ${impacts[r.expected_impact] || 'pill-high'}">${(r.expected_impact||'—').toUpperCase()} IMPACT</span>
       </div>
     </div>`
@@ -818,6 +1035,12 @@ function renderTrend(trend) {
 
   if (trendChartInst) trendChartInst.destroy();
   const ctx = document.getElementById('trendChart').getContext('2d');
+
+  // Create gradient fill
+  const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+  gradient.addColorStop(0, 'rgba(99,102,241,0.2)');
+  gradient.addColorStop(1, 'rgba(99,102,241,0.0)');
+
   trendChartInst = new Chart(ctx, {
     type: 'line',
     data: {
@@ -826,33 +1049,77 @@ function renderTrend(trend) {
         label: 'Health Score',
         data: trend.map(r => r.score),
         borderColor: '#6366f1',
-        backgroundColor: 'rgba(99,102,241,0.1)',
+        backgroundColor: gradient,
         fill: true,
         tension: 0.4,
         pointBackgroundColor: '#6366f1',
-        pointRadius: 4,
-        pointHoverRadius: 6,
+        pointBorderColor: 'var(--bg-secondary)',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5,
       }],
     },
     options: {
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { ticks: { color: c.ticks, font: { size: 11 } }, grid: { color: c.grid } },
-        y: { min: 0, max: 100, ticks: { color: c.ticks, font: { size: 11 } }, grid: { color: c.grid } },
+      plugins: { 
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'var(--bg-elevated)',
+          titleColor: 'var(--text-primary)',
+          bodyColor: 'var(--text-secondary)',
+          borderColor: 'var(--border-subtle)',
+          borderWidth: 1,
+          padding: 12,
+          cornerRadius: 10,
+        }
       },
+      scales: {
+        x: { 
+          ticks: { color: c.ticks, font: { size: 11 } }, 
+          grid: { color: c.grid, drawBorder: false } 
+        },
+        y: { 
+          min: 0, max: 100, 
+          ticks: { color: c.ticks, font: { size: 11 } }, 
+          grid: { color: c.grid, drawBorder: false } 
+        },
+      },
+      interaction: { intersect: false, mode: 'index' },
     },
   });
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   At-risk panel
+   At-risk panel — FIXED FILTERING
 ═══════════════════════════════════════════════════════════════════════ */
 async function loadAtRiskUsers() {
   const gap = document.getElementById('gapFilter').value;
   setLoading('Fetching at-risk users…');
   try {
-    const url = '/users/gaps' + (gap ? `?gap_type=${gap}` : '');
-    const d   = await api(url);
+    // Build URL with proper query params
+    let url = '/users/gaps';
+    const params = new URLSearchParams();
+
+    // If gap is a risk level (high/medium/low), use min_churn_risk
+    if (gap === 'high') {
+      params.append('min_churn_risk', '70');
+    } else if (gap === 'medium') {
+      params.append('min_churn_risk', '40');
+      // Also need to cap at 70 for medium-only, but backend doesn't support max
+      // We'll filter client-side below
+    } else if (gap === 'low') {
+      params.append('min_churn_risk', '0');
+      // Filter client-side for low-only
+    } else if (gap) {
+      // It's a gap_type
+      params.append('gap_type', gap);
+    }
+
+    if (params.toString()) {
+      url += '?' + params.toString();
+    }
+
+    const d = await api(url);
     stopLoading();
     document.getElementById('dashContent').classList.add('hidden');
     document.getElementById('emptyState').classList.add('hidden');
@@ -860,23 +1127,36 @@ async function loadAtRiskUsers() {
     const panel = document.getElementById('atRiskPanel');
     panel.classList.remove('hidden');
 
+    // Client-side filtering for medium/low risk levels
+    let users = d.users_with_gaps || [];
+    if (gap === 'medium') {
+      users = users.filter(u => u.churn_risk?.level === 'medium' || (u.churn_risk?.score >= 40 && u.churn_risk?.score < 70));
+    } else if (gap === 'low') {
+      users = users.filter(u => u.churn_risk?.level === 'low' || u.churn_risk?.score < 40);
+    }
+
     const churnColors = { high:'var(--danger)', medium:'var(--warning)', low:'var(--success)' };
-    document.getElementById('atRiskList').innerHTML = !d.users_with_gaps.length
-      ? '<p style="color: var(--text-muted); font-size: 0.875rem;">No at-risk users found.</p>'
-      : d.users_with_gaps.map(u =>
-          `<div class="card p-4 at-risk-item flex items-center justify-between"
+    const churnLabels = { high:'High Risk', medium:'Medium Risk', low:'Low Risk' };
+
+    document.getElementById('atRiskList').innerHTML = !users.length
+      ? '<div class="card p-6 text-center"><p style="color: var(--text-muted); font-size: 0.875rem;">No at-risk users found matching your filter.</p></div>'
+      : users.map((u, i) =>
+          `<div class="card p-4 at-risk-item flex items-center justify-between animate-in" style="animation-delay: ${i * 0.03}s;"
                 onclick="document.getElementById('loadUserInput').value='${u.user_id}'; hideAtRisk(); loadUser();">
-            <div>
-              <p style="color: var(--text-primary); font-size: 0.875rem; font-weight: 600;">${u.user_id}</p>
-              <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 2px;">${(u.gaps||[]).join(' · ') || 'no gaps'}</p>
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-12 rounded-full flex-shrink-0" style="background: ${churnColors[u.churn_risk?.level]||'var(--text-muted)'};"></div>
+              <div>
+                <p style="color: var(--text-primary); font-size: 0.875rem; font-weight: 600;">${u.user_id}</p>
+                <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 2px;">${(u.gaps||[]).join(' · ') || 'no gaps'}</p>
+              </div>
             </div>
             <div class="text-right">
-              <p class="text-lg font-bold" style="color: ${churnColors[u.churn_risk?.level]||'var(--text-muted)'};">${u.health_score}</p>
-              <p style="color: var(--text-muted); font-size: 0.7rem;">score</p>
+              <span class="pill pill-${u.churn_risk?.level||'low'}" style="font-size: 0.6rem;">${churnLabels[u.churn_risk?.level]||'Unknown'}</span>
+              <p class="text-lg font-bold mt-1" style="color: ${churnColors[u.churn_risk?.level]||'var(--text-muted)'};">${u.health_score}</p>
             </div>
           </div>`
         ).join('');
-    toast(`Found ${d.count} at-risk user(s)`);
+    toast(`Found ${users.length} at-risk user(s)`);
   } catch(e) {
     stopLoading(); showEmpty();
     toast('Error: ' + e.message, false);
