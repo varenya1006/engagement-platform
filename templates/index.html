@@ -7,138 +7,324 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    body { background: #0b0f1a; }
+    :root {
+      --bg-primary: #0f1117;
+      --bg-secondary: #161922;
+      --bg-tertiary: #1e2130;
+      --bg-elevated: #252a3d;
+      --border-subtle: #2a2f45;
+      --border-hover: #3d4466;
+      --text-primary: #e8eaf0;
+      --text-secondary: #9ca3b8;
+      --text-muted: #6b7280;
+      --text-placeholder: #4b5563;
+      --accent-primary: #6366f1;
+      --accent-secondary: #8b5cf6;
+      --accent-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --success: #22c55e;
+      --success-bg: #14532d;
+      --warning: #f59e0b;
+      --warning-bg: #713f12;
+      --danger: #ef4444;
+      --danger-bg: #7f1d1d;
+      --info: #06b6d4;
+      --info-bg: #0e4a5c;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --transition-fast: 0.15s ease;
+      --transition-base: 0.25s ease;
+    }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    [data-theme="light"] {
+      --bg-primary: #f8f9fc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f3f9;
+      --bg-elevated: #e8ecf4;
+      --border-subtle: #e2e7ef;
+      --border-hover: #c8d0e0;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --text-placeholder: #cbd5e1;
+      --accent-primary: #4f46e5;
+      --accent-secondary: #7c3aed;
+      --accent-gradient: linear-gradient(135deg, #4f46e5, #7c3aed);
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --info: #0891b2;
+      --info-bg: #cffafe;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    * { transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-fast); }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-    /* Gauge arc */
     .gauge-wrap { position: relative; display: inline-block; }
-    .gauge-val  { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-                  font-size: 2rem; font-weight: 800; color: #f1f5f9; }
-    .gauge-lbl  { font-size: 0.65rem; color: #64748b; margin-top: -4px; }
+    .gauge-val  { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+                  font-size: 2.2rem; font-weight: 800; color: var(--text-primary); }
+    .gauge-lbl  { font-size: 0.7rem; color: var(--text-muted); margin-top: -2px; }
 
-    /* Skeleton shimmer */
     @keyframes shimmer {
       0%   { background-position: -400px 0; }
       100% { background-position:  400px 0; }
     }
     .skeleton {
-      background: linear-gradient(90deg, #1e293b 25%, #2d3f55 50%, #1e293b 75%);
+      background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-elevated) 50%, var(--bg-tertiary) 75%);
       background-size: 400px 100%;
       animation: shimmer 1.4s infinite;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
     }
 
-    /* Spinner */
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner { animation: spin .7s linear infinite; }
 
-    /* Pill */
-    .pill { display: inline-block; padding: 2px 10px; border-radius: 20px;
-            font-size: 0.68rem; font-weight: 700; }
-    .pill-low    { background: #14532d; color: #86efac; }
-    .pill-medium { background: #713f12; color: #fde68a; }
-    .pill-high   { background: #7f1d1d; color: #fca5a5; }
+    .pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em; }
+    .pill-low    { background: var(--success-bg); color: var(--success); }
+    .pill-medium { background: var(--warning-bg); color: var(--warning); }
+    .pill-high   { background: var(--danger-bg); color: var(--danger); }
+    .pill-info   { background: var(--info-bg); color: var(--info); }
 
-    /* Tab underline */
-    .tab-btn { transition: color .15s, border-color .15s; }
-    .tab-btn.active { color: #818cf8; border-bottom: 2px solid #818cf8; }
+    .tab-btn { transition: all var(--transition-fast); position: relative; padding-bottom: 8px; }
+    .tab-btn::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+                      background: var(--accent-primary); transform: scaleX(0); transition: transform var(--transition-fast); }
+    .tab-btn.active { color: var(--accent-primary); }
+    .tab-btn.active::after { transform: scaleX(1); }
+    .tab-btn:hover:not(.active) { color: var(--text-secondary); }
 
-    /* Card hover */
-    .metric-card { transition: transform .15s; }
-    .metric-card:hover { transform: translateY(-2px); }
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-base);
+    }
+    .card:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
 
-    /* Toast */
-    #toast { transition: opacity .3s; }
+    .metric-card { transition: all var(--transition-base); }
+    .metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+    .input-field {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      transition: all var(--transition-fast);
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    .input-field::placeholder { color: var(--text-placeholder); }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      transition: all var(--transition-fast);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      transition: all var(--transition-fast);
+    }
+    .btn-secondary:hover { background: var(--bg-elevated); border-color: var(--border-hover); color: var(--text-primary); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+    .btn-ghost:hover { background: var(--bg-tertiary); color: var(--text-secondary); }
+
+    #toast {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(12px);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+    .sidebar { background: var(--bg-secondary); border-right: 1px solid var(--border-subtle); }
+    .header { background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle); }
+
+    .progress-track {
+      background: var(--bg-tertiary);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      border-radius: 999px;
+      transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .theme-toggle {
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all var(--transition-fast);
+      background: var(--bg-tertiary); border: 1px solid var(--border-subtle);
+    }
+    .theme-toggle:hover { background: var(--bg-elevated); border-color: var(--border-hover); }
+
+    .list-item { transition: all var(--transition-fast); border-radius: var(--radius-sm); }
+    .list-item:hover { background: var(--bg-tertiary); }
+
+    .at-risk-item { transition: all var(--transition-fast); cursor: pointer; }
+    .at-risk-item:hover { border-color: var(--accent-primary); background: var(--bg-tertiary); }
+
+    .section-label {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--text-muted);
+    }
+
+    .number-display { font-size: 2.5rem; font-weight: 800; line-height: 1; color: var(--text-primary); }
+
+    .icon-box {
+      width: 40px; height: 40px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+
+    .rec-item { transition: all var(--transition-fast); }
+    .rec-item:hover { border-color: var(--border-hover); transform: translateX(2px); }
+
+    .empty-state-icon { font-size: 3rem; opacity: 0.5; }
+
+    .loading-overlay { background: var(--bg-primary); }
   </style>
+<base target="_blank">
 </head>
-<body class="text-slate-200 min-h-screen">
+<body class="min-h-screen">
 
-<!-- ── Header ─────────────────────────────────────────────────────────────── -->
-<header class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center gap-4">
-  <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg"
-       style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">📊</div>
-  <div>
-    <h1 class="text-sm font-bold text-slate-100">User Engagement Platform</h1>
-    <p class="text-xs text-slate-500">Health Scores · Gap Detection · AI Recommendations</p>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Header
+═══════════════════════════════════════════════════════════════════════ -->
+<header class="header px-5 py-3 flex items-center gap-4 sticky top-0 z-40">
+  <div class="icon-box" style="background: var(--accent-gradient); color: white; box-shadow: 0 2px 8px rgba(99,102,241,0.3);">
+    📊
   </div>
-  <div class="ml-auto flex items-center gap-3">
-    <span id="mongoStatus" class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-500">● checking…</span>
-    <span id="openaiStatus" class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-500">● OpenAI</span>
+  <div class="flex-1 min-w-0">
+    <h1 class="text-sm font-bold" style="color: var(--text-primary);">Engagement Platform</h1>
+    <p class="text-xs" style="color: var(--text-muted);">Health Scores · Gap Detection · AI Recommendations</p>
+  </div>
+  <div class="flex items-center gap-3">
+    <div class="status-badge" id="mongoStatus" style="background: var(--bg-tertiary); color: var(--text-muted);">
+      <span class="dot" style="background: var(--text-muted);"></span>
+      <span>Checking…</span>
+    </div>
+    <div class="status-badge" id="openaiStatus" style="background: var(--bg-tertiary); color: var(--text-muted);">
+      <span class="dot" style="background: var(--text-muted);"></span>
+      <span>OpenAI</span>
+    </div>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <span id="themeIcon">🌙</span>
+    </div>
   </div>
 </header>
 
-<!-- ── Toast ──────────────────────────────────────────────────────────────── -->
-<div id="toast" class="fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-sm font-medium opacity-0 pointer-events-none bg-indigo-600 text-white shadow-lg"></div>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Toast
+═══════════════════════════════════════════════════════════════════════ -->
+<div id="toast" class="fixed top-16 right-4 z-50 px-4 py-3 rounded-lg text-sm font-medium opacity-0 pointer-events-none" style="background: var(--bg-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); box-shadow: var(--shadow-lg);">
+</div>
 
-<!-- ── Main ───────────────────────────────────────────────────────────────── -->
-<div class="flex h-[calc(100vh-56px)]">
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Main Layout
+═══════════════════════════════════════════════════════════════════════ -->
+<div class="flex" style="height: calc(100vh - 60px);">
 
   <!-- ── Sidebar ── -->
-  <aside class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col overflow-y-auto flex-shrink-0">
+  <aside class="sidebar w-72 flex flex-col overflow-y-auto flex-shrink-0" style="height: calc(100vh - 60px);">
 
-    <!-- Ingest Events -->
-    <div class="p-4 border-b border-slate-800">
-      <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Simulate User</p>
+    <!-- Simulate User -->
+    <div class="p-4 border-b" style="border-color: var(--border-subtle);">
+      <p class="section-label mb-3">Simulate User</p>
 
-      <label class="text-xs text-slate-400 mb-1 block">User ID</label>
+      <label class="block text-xs font-medium mb-1.5" style="color: var(--text-secondary);">User ID</label>
       <input id="userIdInput" type="text" placeholder="e.g. user_42"
-             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200
-                    placeholder-slate-600 focus:outline-none focus:border-indigo-500 mb-2"/>
+             class="input-field w-full px-3 py-2.5 text-sm mb-3"/>
 
-      <label class="text-xs text-slate-400 mb-1 block">Sessions</label>
+      <label class="block text-xs font-medium mb-1.5" style="color: var(--text-secondary);">Sessions</label>
       <input id="sessionCount" type="number" value="5" min="1" max="30"
-             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200
-                    focus:outline-none focus:border-indigo-500 mb-2"/>
+             class="input-field w-full px-3 py-2.5 text-sm mb-3"/>
 
-      <label class="text-xs text-slate-400 mb-1 block">Days ago (last activity)</label>
+      <label class="block text-xs font-medium mb-1.5" style="color: var(--text-secondary);">Days since last activity</label>
       <input id="daysAgo" type="number" value="2" min="0" max="60"
-             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200
-                    focus:outline-none focus:border-indigo-500 mb-3"/>
+             class="input-field w-full px-3 py-2.5 text-sm mb-4"/>
 
-      <button onclick="ingestAndAnalyse()"
-              class="w-full py-2 rounded-lg text-sm font-semibold text-white
-                     bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 active:scale-95 transition">
+      <button onclick="ingestAndAnalyse()" class="btn-primary w-full py-2.5 text-sm">
         ⚡ Ingest &amp; Analyse
       </button>
     </div>
 
-    <!-- Load Existing -->
-    <div class="p-4 border-b border-slate-800">
-      <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Load User</p>
+    <!-- Load User -->
+    <div class="p-4 border-b" style="border-color: var(--border-subtle);">
+      <p class="section-label mb-3">Load User</p>
       <input id="loadUserInput" type="text" placeholder="Enter user ID"
-             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200
-                    placeholder-slate-600 focus:outline-none focus:border-indigo-500 mb-2"/>
-      <button onclick="loadUser()"
-              class="w-full py-2 rounded-lg text-sm font-semibold text-slate-300
-                     bg-slate-700 hover:bg-slate-600 active:scale-95 transition">
+             class="input-field w-full px-3 py-2.5 text-sm mb-3"/>
+      <button onclick="loadUser()" class="btn-secondary w-full py-2.5 text-sm">
         🔍 Load Dashboard
       </button>
     </div>
 
     <!-- Known Users -->
     <div class="p-4 flex-1">
-      <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Known Users</p>
-      <div id="userList" class="space-y-1 text-sm text-slate-500 italic">loading…</div>
+      <p class="section-label mb-3">Known Users</p>
+      <div id="userList" class="space-y-1 text-sm" style="color: var(--text-muted);">loading…</div>
     </div>
 
     <!-- Gap Filter -->
-    <div class="p-4 border-t border-slate-800">
-      <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Gap Filter</p>
-      <select id="gapFilter"
-              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300
-                     focus:outline-none focus:border-indigo-500 mb-2">
+    <div class="p-4 border-t" style="border-color: var(--border-subtle);">
+      <p class="section-label mb-3">Gap Filter</p>
+      <select id="gapFilter" class="input-field w-full px-3 py-2.5 text-sm mb-3">
         <option value="">All gaps</option>
-        <option value="inactive_week">Inactive &gt; 1 week</option>
+        <option value="inactive_week">Inactive > 1 week</option>
         <option value="low_feature_adoption">Low feature adoption</option>
         <option value="low_session_count">Low session count</option>
       </select>
-      <button onclick="loadAtRiskUsers()"
-              class="w-full py-2 rounded-lg text-sm font-semibold text-slate-300
-                     bg-slate-700 hover:bg-slate-600 active:scale-95 transition">
+      <button onclick="loadAtRiskUsers()" class="btn-secondary w-full py-2.5 text-sm">
         ⚠️ At-Risk Users
       </button>
     </div>
@@ -148,79 +334,84 @@
   <main class="flex-1 overflow-y-auto p-6 space-y-6">
 
     <!-- Loading state -->
-    <div id="loadingState" class="hidden flex flex-col items-center justify-center h-full gap-3 text-slate-500">
-      <div class="spinner w-8 h-8 border-2 border-slate-700 border-t-indigo-500 rounded-full"></div>
-      <p id="loadingMsg" class="text-sm">Fetching data…</p>
+    <div id="loadingState" class="hidden flex flex-col items-center justify-center h-full gap-4">
+      <div class="spinner w-10 h-10 border-2 rounded-full" style="border-color: var(--border-subtle); border-top-color: var(--accent-primary);"></div>
+      <p id="loadingMsg" class="text-sm" style="color: var(--text-muted);">Fetching data…</p>
     </div>
 
     <!-- Empty state -->
-    <div id="emptyState" class="flex flex-col items-center justify-center h-full gap-4 text-slate-600">
-      <div class="text-5xl">📈</div>
-      <p class="text-sm">Enter a User ID and click <span class="text-indigo-400 font-semibold">Ingest &amp; Analyse</span> to begin.</p>
+    <div id="emptyState" class="flex flex-col items-center justify-center h-full gap-4">
+      <div class="empty-state-icon">📈</div>
+      <p class="text-sm" style="color: var(--text-muted);">
+        Enter a User ID and click <span style="color: var(--accent-primary); font-weight: 600;">Ingest &amp; Analyse</span> to begin.
+      </p>
     </div>
 
-    <!-- Dashboard content (hidden until loaded) -->
+    <!-- Dashboard content -->
     <div id="dashContent" class="hidden space-y-6">
 
       <!-- User header -->
       <div class="flex items-center justify-between">
-        <div>
-          <h2 id="dashUserId" class="text-lg font-bold text-slate-100"></h2>
-          <p id="dashComputedAt" class="text-xs text-slate-500 mt-0.5"></p>
+        <div class="flex items-center gap-3">
+          <div class="icon-box" style="background: var(--accent-gradient); color: white;">
+            👤
+          </div>
+          <div>
+            <h2 id="dashUserId" class="text-lg font-bold" style="color: var(--text-primary);"></h2>
+            <p id="dashComputedAt" class="text-xs" style="color: var(--text-muted);"></p>
+          </div>
         </div>
-        <button onclick="refreshRecommendations()"
-                class="px-4 py-2 rounded-lg text-xs font-semibold text-indigo-300 border border-indigo-700
-                       hover:bg-indigo-900 transition">
+        <button onclick="refreshRecommendations()" class="btn-ghost px-4 py-2 text-sm font-semibold" style="border: 1px solid var(--border-subtle);">
           🤖 Refresh AI Recs
         </button>
       </div>
 
       <!-- Tabs -->
-      <div class="flex gap-6 border-b border-slate-800 text-sm text-slate-500">
-        <button class="tab-btn active pb-2" onclick="switchTab('overview',this)">Overview</button>
-        <button class="tab-btn pb-2"        onclick="switchTab('metrics',this)">Metrics</button>
-        <button class="tab-btn pb-2"        onclick="switchTab('recs',this)">Recommendations</button>
-        <button class="tab-btn pb-2"        onclick="switchTab('trend',this)">Score Trend</button>
+      <div class="flex gap-6 border-b" style="border-color: var(--border-subtle);">
+        <button class="tab-btn active pb-3 text-sm font-medium" style="color: var(--text-secondary);" onclick="switchTab('overview',this)">Overview</button>
+        <button class="tab-btn pb-3 text-sm font-medium" style="color: var(--text-muted);" onclick="switchTab('metrics',this)">Metrics</button>
+        <button class="tab-btn pb-3 text-sm font-medium" style="color: var(--text-muted);" onclick="switchTab('recs',this)">Recommendations</button>
+        <button class="tab-btn pb-3 text-sm font-medium" style="color: var(--text-muted);" onclick="switchTab('trend',this)">Score Trend</button>
       </div>
 
       <!-- ── TAB: Overview ── -->
       <div id="tab-overview" class="space-y-5">
 
-        <!-- Health score gauge + churn -->
+        <!-- Top row: Gauge + Churn + Gaps -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-          <!-- Gauge -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center col-span-1">
-            <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Health Score</p>
+          <!-- Health Score Gauge -->
+          <div class="card p-6 flex flex-col items-center justify-center">
+            <p class="section-label mb-4">Health Score</p>
             <div class="gauge-wrap">
-              <canvas id="gaugeChart" width="180" height="100"></canvas>
+              <canvas id="gaugeChart" width="200" height="110"></canvas>
               <div class="gauge-val" id="gaugeVal">—</div>
             </div>
-            <p class="gauge-lbl mt-1">out of 100</p>
+            <p class="gauge-lbl">out of 100</p>
           </div>
 
-          <!-- Churn risk -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between metric-card">
-            <p class="text-xs text-slate-500 uppercase tracking-widest">Churn Risk</p>
-            <div>
-              <div class="text-4xl font-black mt-3" id="churnScore">—</div>
-              <div class="mt-1" id="churnBadge"></div>
-              <div class="mt-4 h-2 rounded-full bg-slate-800 overflow-hidden">
-                <div id="churnBar" class="h-full rounded-full transition-all duration-700" style="width:0%"></div>
+          <!-- Churn Risk -->
+          <div class="card p-6 flex flex-col justify-between">
+            <p class="section-label">Churn Risk</p>
+            <div class="mt-4">
+              <div class="number-display" id="churnScore">—</div>
+              <div class="mt-2" id="churnBadge"></div>
+              <div class="mt-5 progress-track h-2.5">
+                <div id="churnBar" class="progress-fill h-full" style="width:0%"></div>
               </div>
             </div>
           </div>
 
-          <!-- Engagement gaps -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 metric-card">
-            <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Engagement Gaps</p>
-            <div id="gapsList" class="space-y-2 text-sm"></div>
+          <!-- Engagement Gaps -->
+          <div class="card p-6">
+            <p class="section-label mb-4">Engagement Gaps</p>
+            <div id="gapsList" class="space-y-3"></div>
           </div>
         </div>
 
-        <!-- Component scores radar / bars -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-          <p class="text-xs text-slate-500 uppercase tracking-widest mb-4">Score Components</p>
+        <!-- Component Scores -->
+        <div class="card p-6">
+          <p class="section-label mb-4">Score Components</p>
           <canvas id="componentChart" height="90"></canvas>
         </div>
       </div>
@@ -233,15 +424,15 @@
       <!-- ── TAB: Recommendations ── -->
       <div id="tab-recs" class="hidden space-y-4">
         <div id="recsList" class="space-y-3"></div>
-        <p id="recsModel" class="text-xs text-slate-600 mt-2"></p>
+        <p id="recsModel" class="text-xs" style="color: var(--text-muted);"></p>
       </div>
 
       <!-- ── TAB: Trend ── -->
       <div id="tab-trend" class="hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-          <p class="text-xs text-slate-500 uppercase tracking-widest mb-4">Health Score — Last 30 Days</p>
+        <div class="card p-6">
+          <p class="section-label mb-4">Health Score — Last 30 Days</p>
           <canvas id="trendChart" height="120"></canvas>
-          <p id="trendEmpty" class="text-sm text-slate-600 text-center mt-4 hidden">
+          <p id="trendEmpty" class="text-sm text-center mt-4 hidden" style="color: var(--text-muted);">
             No trend data yet — re-run analysis a few times to build history.
           </p>
         </div>
@@ -252,8 +443,11 @@
     <!-- At-risk panel -->
     <div id="atRiskPanel" class="hidden space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-base font-bold text-slate-100">⚠️ At-Risk Users</h2>
-        <button onclick="hideAtRisk()" class="text-xs text-slate-500 hover:text-slate-300">✕ Close</button>
+        <div class="flex items-center gap-3">
+          <div class="icon-box" style="background: var(--danger-bg); color: var(--danger);">⚠️</div>
+          <h2 class="text-base font-bold" style="color: var(--text-primary);">At-Risk Users</h2>
+        </div>
+        <button onclick="hideAtRisk()" class="btn-ghost px-3 py-1.5 text-xs">✕ Close</button>
       </div>
       <div id="atRiskList" class="space-y-2"></div>
     </div>
@@ -262,19 +456,54 @@
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
+   Theme System
+═══════════════════════════════════════════════════════════════════════ */
+function initTheme() {
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateThemeIcon(next);
+  // Re-render charts to pick up new colors
+  if (currentUserId) {
+    renderDashboard(currentUserId);
+  }
+}
+
+function updateThemeIcon(theme) {
+  document.getElementById('themeIcon').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+function getChartColors() {
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  return {
+    grid: isDark ? '#2a2f45' : '#e2e7ef',
+    ticks: isDark ? '#6b7280' : '#64748b',
+    text: isDark ? '#e8eaf0' : '#1e293b',
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    State
-══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 let currentUserId  = null;
 let gaugeChartInst = null, componentChartInst = null, trendChartInst = null;
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    Utilities
-══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 function toast(msg, ok=true) {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.style.background = ok ? '#4f46e5' : '#b91c1c';
+  el.style.background = ok ? 'var(--accent-primary)' : 'var(--danger)';
+  el.style.color = 'white';
   el.style.opacity = '1';
   el.style.pointerEvents = 'auto';
   setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }, 2800);
@@ -309,16 +538,34 @@ async function api(url, opts={}) {
   return r.json();
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    Health check on load
-══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 async function checkHealth() {
   try {
     const d = await api('/health');
-    document.getElementById('mongoStatus').textContent  = d.mongo_connected  ? '● MongoDB' : '● MongoDB ✗';
-    document.getElementById('mongoStatus').className    = `text-xs px-2 py-1 rounded ${d.mongo_connected  ? 'bg-green-900 text-green-400' : 'bg-red-900 text-red-400'}`;
-    document.getElementById('openaiStatus').textContent = d.openai_configured ? '● OpenAI'  : '● OpenAI (rule-based)';
-    document.getElementById('openaiStatus').className   = `text-xs px-2 py-1 rounded ${d.openai_configured ? 'bg-green-900 text-green-400' : 'bg-yellow-900 text-yellow-500'}`;
+    const mongoEl = document.getElementById('mongoStatus');
+    const openaiEl = document.getElementById('openaiStatus');
+
+    if (d.mongo_connected) {
+      mongoEl.innerHTML = '<span class="dot" style="background: var(--success);"></span><span>MongoDB</span>';
+      mongoEl.style.background = 'var(--success-bg)';
+      mongoEl.style.color = 'var(--success)';
+    } else {
+      mongoEl.innerHTML = '<span class="dot" style="background: var(--danger);"></span><span>MongoDB ✗</span>';
+      mongoEl.style.background = 'var(--danger-bg)';
+      mongoEl.style.color = 'var(--danger)';
+    }
+
+    if (d.openai_configured) {
+      openaiEl.innerHTML = '<span class="dot" style="background: var(--success);"></span><span>OpenAI</span>';
+      openaiEl.style.background = 'var(--success-bg)';
+      openaiEl.style.color = 'var(--success)';
+    } else {
+      openaiEl.innerHTML = '<span class="dot" style="background: var(--warning);"></span><span>OpenAI (rule-based)</span>';
+      openaiEl.style.background = 'var(--warning-bg)';
+      openaiEl.style.color = 'var(--warning)';
+    }
   } catch {}
 }
 
@@ -326,21 +573,24 @@ async function loadUserList() {
   try {
     const d = await api('/users');
     const el = document.getElementById('userList');
-    if (!d.users.length) { el.textContent = 'No users yet.'; return; }
+    if (!d.users.length) { el.textContent = 'No users yet.'; el.style.color = 'var(--text-muted)'; return; }
     el.innerHTML = '';
     d.users.forEach(uid => {
       const btn = document.createElement('button');
       btn.textContent = uid;
-      btn.className = 'w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:bg-slate-800 hover:text-indigo-400 transition truncate';
+      btn.className = 'list-item w-full text-left px-3 py-2 text-xs';
+      btn.style.color = 'var(--text-secondary)';
+      btn.onmouseenter = () => btn.style.color = 'var(--accent-primary)';
+      btn.onmouseleave = () => btn.style.color = 'var(--text-secondary)';
       btn.onclick = () => { document.getElementById('loadUserInput').value = uid; loadUser(); };
       el.appendChild(btn);
     });
   } catch {}
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    Event generation helper
-══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 function generateEvents(userId, sessionCount, daysAgo) {
   const features  = ['dashboard','reports','settings','analytics','export','notifications'];
   const evTypes   = ['page_view','click','search','download','share'];
@@ -362,9 +612,9 @@ function generateEvents(userId, sessionCount, daysAgo) {
   return events;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    Ingest + full pipeline
-══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 async function ingestAndAnalyse() {
   const userId  = document.getElementById('userIdInput').value.trim();
   const sessions = parseInt(document.getElementById('sessionCount').value) || 5;
@@ -404,15 +654,15 @@ async function loadUser() {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    Render
-══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 async function renderDashboard(userId) {
   setLoading('Fetching dashboard…');
   const dash = await api(`/dashboard/${userId}`);
   currentUserId = userId;
 
-  document.getElementById('dashUserId').textContent   = '👤 ' + userId;
+  document.getElementById('dashUserId').textContent = userId;
   document.getElementById('dashComputedAt').textContent = dash.generated_at
     ? 'Generated: ' + new Date(dash.generated_at).toLocaleString() : '';
 
@@ -435,6 +685,7 @@ async function renderDashboard(userId) {
 function renderOverview(hs) {
   const score = hs.composite_score;
   const churn = hs.churn_risk;
+  const c = getChartColors();
 
   // Gauge
   document.getElementById('gaugeVal').textContent = score;
@@ -445,7 +696,7 @@ function renderOverview(hs) {
   const badge = document.getElementById('churnBadge');
   badge.innerHTML = `<span class="pill pill-${churn.level}">${churn.level.toUpperCase()} RISK</span>`;
   const bar = document.getElementById('churnBar');
-  const barColor = churn.level === 'high' ? '#ef4444' : churn.level === 'medium' ? '#f59e0b' : '#22c55e';
+  const barColor = churn.level === 'high' ? 'var(--danger)' : churn.level === 'medium' ? 'var(--warning)' : 'var(--success)';
   bar.style.width = churn.score + '%';
   bar.style.background = barColor;
 
@@ -453,13 +704,13 @@ function renderOverview(hs) {
   const gl = document.getElementById('gapsList');
   const gaps = hs.engagement_gaps || [];
   if (!gaps.length) {
-    gl.innerHTML = '<p class="text-green-400 text-sm">✅ No gaps detected</p>';
+    gl.innerHTML = '<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full" style="background: var(--success);"></span><span style="color: var(--success); font-size: 0.875rem;">✅ No gaps detected</span></div>';
   } else {
     const labels = { inactive_week:'Inactive > 1 week', low_feature_adoption:'Low feature adoption', low_session_count:'Low session count' };
     gl.innerHTML = gaps.map(g =>
-      `<div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
-        <span class="text-amber-300">${labels[g] || g}</span>
+      `<div class="flex items-center gap-3">
+        <span class="w-2 h-2 rounded-full flex-shrink-0" style="background: var(--warning);"></span>
+        <span style="color: var(--text-secondary); font-size: 0.875rem;">${labels[g] || g}</span>
       </div>`
     ).join('');
   }
@@ -481,8 +732,8 @@ function renderOverview(hs) {
     options: {
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color:'#94a3b8', font:{size:11} }, grid:{color:'#1e293b'} },
-        y: { min:0, max:100, ticks:{ color:'#94a3b8', font:{size:11} }, grid:{color:'#1e293b'} },
+        x: { ticks: { color: c.ticks, font: { size: 11 } }, grid: { color: c.grid } },
+        y: { min: 0, max: 100, ticks: { color: c.ticks, font: { size: 11 } }, grid: { color: c.grid } },
       },
     },
   });
@@ -493,18 +744,19 @@ function drawGauge(score) {
   const ctx = document.getElementById('gaugeChart').getContext('2d');
   const filled = score / 100;
   const color  = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444';
+  const bgColor = document.documentElement.getAttribute('data-theme') === 'light' ? '#e2e7ef' : '#1e2130';
   gaugeChartInst = new Chart(ctx, {
     type: 'doughnut',
     data: {
       datasets: [{
         data: [filled, 1 - filled],
-        backgroundColor: [color, '#1e293b'],
+        backgroundColor: [color, bgColor],
         borderWidth: 0,
         circumference: 180,
         rotation: 270,
       }],
     },
-    options: { cutout: '75%', plugins: { legend:{display:false}, tooltip:{enabled:false} } },
+    options: { cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } },
   });
 }
 
@@ -520,22 +772,22 @@ function renderMetrics(metrics) {
   ];
   const grid = document.getElementById('metricsGrid');
   grid.innerHTML = defs.map(d =>
-    `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 metric-card">
-      <p class="text-xs text-slate-500 uppercase tracking-widest">${d.icon} ${d.label}</p>
-      <p class="text-3xl font-black mt-3 text-slate-100">${d.fmt(metrics[d.key] ?? 0)}</p>
+    `<div class="card p-5 metric-card">
+      <p class="section-label">${d.icon} ${d.label}</p>
+      <p class="number-display mt-3">${d.fmt(metrics[d.key] ?? 0)}</p>
     </div>`
   ).join('');
 }
 
 /* ── Recommendations ── */
 function renderRecs(recs, model='') {
-  const impacts = { high:'bg-green-900 text-green-400', medium:'bg-yellow-900 text-yellow-400', low:'bg-slate-700 text-slate-400' };
+  const impacts = { high:'pill-low', medium:'pill-medium', low:'pill-high' };
   document.getElementById('recsList').innerHTML = recs.map((r,i) =>
-    `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex gap-4">
-      <div class="w-8 h-8 rounded-lg bg-indigo-900 text-indigo-300 flex items-center justify-center text-sm font-bold flex-shrink-0">${i+1}</div>
+    `<div class="card p-5 rec-item flex gap-4">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0" style="background: var(--accent-primary); color: white;">${i+1}</div>
       <div>
-        <p class="text-sm text-slate-200">${r.action}</p>
-        <span class="pill mt-2 inline-block ${impacts[r.expected_impact] || impacts.low}">${(r.expected_impact||'—').toUpperCase()} IMPACT</span>
+        <p style="color: var(--text-primary); font-size: 0.875rem;">${r.action}</p>
+        <span class="pill mt-2 ${impacts[r.expected_impact] || 'pill-high'}">${(r.expected_impact||'—').toUpperCase()} IMPACT</span>
       </div>
     </div>`
   ).join('');
@@ -560,6 +812,7 @@ async function refreshRecommendations() {
 /* ── Trend ── */
 function renderTrend(trend) {
   const empty = document.getElementById('trendEmpty');
+  const c = getChartColors();
   if (!trend.length) { empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
 
@@ -573,26 +826,27 @@ function renderTrend(trend) {
         label: 'Health Score',
         data: trend.map(r => r.score),
         borderColor: '#6366f1',
-        backgroundColor: 'rgba(99,102,241,.15)',
+        backgroundColor: 'rgba(99,102,241,0.1)',
         fill: true,
         tension: 0.4,
         pointBackgroundColor: '#6366f1',
         pointRadius: 4,
+        pointHoverRadius: 6,
       }],
     },
     options: {
-      plugins: { legend:{ display:false } },
+      plugins: { legend: { display: false } },
       scales: {
-        x: { ticks:{ color:'#94a3b8', font:{size:11} }, grid:{ color:'#1e293b' } },
-        y: { min:0, max:100, ticks:{ color:'#94a3b8', font:{size:11} }, grid:{ color:'#1e293b' } },
+        x: { ticks: { color: c.ticks, font: { size: 11 } }, grid: { color: c.grid } },
+        y: { min: 0, max: 100, ticks: { color: c.ticks, font: { size: 11 } }, grid: { color: c.grid } },
       },
     },
   });
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    At-risk panel
-══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 async function loadAtRiskUsers() {
   const gap = document.getElementById('gapFilter').value;
   setLoading('Fetching at-risk users…');
@@ -606,19 +860,19 @@ async function loadAtRiskUsers() {
     const panel = document.getElementById('atRiskPanel');
     panel.classList.remove('hidden');
 
-    const churnColors = { high:'text-red-400', medium:'text-amber-400', low:'text-green-400' };
+    const churnColors = { high:'var(--danger)', medium:'var(--warning)', low:'var(--success)' };
     document.getElementById('atRiskList').innerHTML = !d.users_with_gaps.length
-      ? '<p class="text-slate-500 text-sm">No at-risk users found.</p>'
+      ? '<p style="color: var(--text-muted); font-size: 0.875rem;">No at-risk users found.</p>'
       : d.users_with_gaps.map(u =>
-          `<div class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 flex items-center justify-between cursor-pointer hover:border-indigo-700 transition"
+          `<div class="card p-4 at-risk-item flex items-center justify-between"
                 onclick="document.getElementById('loadUserInput').value='${u.user_id}'; hideAtRisk(); loadUser();">
             <div>
-              <p class="text-sm font-semibold text-slate-200">${u.user_id}</p>
-              <p class="text-xs text-slate-500 mt-0.5">${(u.gaps||[]).join(' · ') || 'no gaps'}</p>
+              <p style="color: var(--text-primary); font-size: 0.875rem; font-weight: 600;">${u.user_id}</p>
+              <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 2px;">${(u.gaps||[]).join(' · ') || 'no gaps'}</p>
             </div>
             <div class="text-right">
-              <p class="text-lg font-black ${churnColors[u.churn_risk?.level]||'text-slate-400'}">${u.health_score}</p>
-              <p class="text-xs text-slate-500">score</p>
+              <p class="text-lg font-bold" style="color: ${churnColors[u.churn_risk?.level]||'var(--text-muted)'};">${u.health_score}</p>
+              <p style="color: var(--text-muted); font-size: 0.7rem;">score</p>
             </div>
           </div>`
         ).join('');
@@ -633,26 +887,33 @@ function hideAtRisk() {
   if (currentUserId) showDash(); else showEmpty();
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    Tabs
-══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 const TAB_IDS = ['overview','metrics','recs','trend'];
 function switchTab(id, btn) {
   TAB_IDS.forEach(t => {
     document.getElementById('tab-' + t)?.classList.add('hidden');
   });
   document.getElementById('tab-' + id)?.classList.remove('hidden');
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.color = 'var(--text-muted)';
+  });
+  if (btn) {
+    btn.classList.add('active');
+    btn.style.color = 'var(--accent-primary)';
+  }
 }
 function switchTabById(id) {
   const btn = [...document.querySelectorAll('.tab-btn')].find(b => b.textContent.toLowerCase().includes(id));
   switchTab(id, btn);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    Init
-══════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
+initTheme();
 checkHealth();
 loadUserList();
 </script>
