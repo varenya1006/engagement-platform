@@ -39,8 +39,15 @@ events_col:          Collection = db["events"]
 health_scores_col:   Collection = db["health_scores"]
 recommendations_col: Collection = db["recommendations"]
 
-events_col.create_index([("user_id", ASCENDING), ("timestamp", DESCENDING)])
-health_scores_col.create_index([("user_id", ASCENDING), ("computed_at", DESCENDING)])
+def _ensure_indexes():
+    try:
+        events_col.create_index([("user_id", ASCENDING), ("timestamp", DESCENDING)])
+        health_scores_col.create_index([("user_id", ASCENDING), ("computed_at", DESCENDING)])
+    except Exception as e:
+        app.logger.warning(f"Index creation skipped: {e}")
+
+with app.app_context():
+    _ensure_indexes()
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
