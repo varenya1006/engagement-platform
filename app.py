@@ -12,7 +12,7 @@ from flask_cors import CORS
 import os
 import uuid
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List
 
 import pandas as pd
@@ -86,7 +86,7 @@ class HealthScoreEngine:
         avg_session_dur = float(sessions["time_diff"].sum().mean()) if total_sessions > 0 else 0
         unique_features = int(df["feature"].nunique()) if "feature" in df.columns else 0
         last_activity   = df["timestamp"].max()
-        days_since      = (datetime.utcnow() - last_activity).days
+        days_since      = (datetime.now(timezone.utc) - last_activity.tz_localize("UTC") if last_activity.tzinfo is None else last_activity).days
         eps             = total_events / total_sessions if total_sessions > 0 else 0
 
         return {
@@ -163,7 +163,7 @@ def generate_recommendations(user_id: str, health_data: Dict, metrics: Dict) -> 
         return {
             "user_id": user_id,
             "recommendations": _rule_based_recommendations(gaps, churn_level),
-            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "generated_at": datetime.now(timezone.utc).isoformat() + "Z",
             "model": "rule-based (no OpenAI key configured)",
         }
 
@@ -198,7 +198,7 @@ Provide exactly 3 short, specific recommendations. Format as a JSON array of obj
         return {
             "user_id": user_id,
             "recommendations": recommendations,
-            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "generated_at": datetime.now(timezone.utc).isoformat() + "Z",
             "model": "gpt-3.5-turbo",
         }
     except Exception as e:
@@ -206,7 +206,7 @@ Provide exactly 3 short, specific recommendations. Format as a JSON array of obj
             "user_id": user_id,
             "recommendations": _rule_based_recommendations(gaps, churn_level),
             "error": str(e),
-            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "generated_at": datetime.now(timezone.utc).isoformat() + "Z",
             "model": "rule-based (OpenAI error)",
         }
 
@@ -249,7 +249,7 @@ def ingest_events():
     enriched = []
     for e in events:
         e["user_id"]    = user_id
-        e["ingested_at"] = datetime.utcnow().isoformat() + "Z"
+        e["ingested_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         e["event_id"]   = str(uuid.uuid4())
         enriched.append(e)
 
@@ -282,7 +282,7 @@ def get_health_score(user_id: str):
         "user_id":     user_id,
         "metrics":     metrics,
         "health_score": health_data,
-        "computed_at": datetime.utcnow().isoformat() + "Z",
+        "computed_at": datetime.now(timezone.utc).isoformat() + "Z",
     }
     try:
         health_scores_col.insert_one(result)
@@ -313,7 +313,7 @@ def get_recommendations(user_id: str):
 def get_dashboard(user_id: str):
     health_record       = health_scores_col.find_one({"user_id": user_id}, sort=[("computed_at", DESCENDING)])
     latest_rec          = recommendations_col.find_one({"user_id": user_id}, sort=[("generated_at", DESCENDING)])
-    thirty_days_ago     = datetime.utcnow() - timedelta(days=30)
+    thirty_days_ago     = datetime.now(timezone.utc) - timedelta(days=30)
     trend_records       = list(health_scores_col.find(
         {"user_id": user_id, "computed_at": {"$gte": thirty_days_ago.isoformat()}},
         {"_id": 0, "computed_at": 1, "health_score.composite_score": 1}
@@ -328,7 +328,7 @@ def get_dashboard(user_id: str):
             {"date": r["computed_at"], "score": r["health_score"]["composite_score"]}
             for r in trend_records if "health_score" in r
         ],
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(timezone.utc).isoformat() + "Z",
     }
     return jsonify(dashboard), 200
 
