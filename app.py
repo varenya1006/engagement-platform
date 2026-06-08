@@ -18,6 +18,7 @@ from typing import Dict, List
 import pandas as pd
 from bson import ObjectId
 from pymongo import MongoClient, ASCENDING, DESCENDING
+from pymongo.errors import PyMongoError
 from pymongo.collection import Collection
 import openai
 
@@ -224,6 +225,10 @@ def _clean(doc: Dict) -> Dict:
 # Frontend
 # ═══════════════════════════════════════════════════════════════════════════════
 
+@app.route("/favicon.ico")
+def favicon():
+    return "", 204
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -248,7 +253,10 @@ def ingest_events():
         e["event_id"]   = str(uuid.uuid4())
         enriched.append(e)
 
-    events_col.insert_many(enriched)
+    try:
+        events_col.insert_many(enriched)
+    except PyMongoError as e:
+        return jsonify({"error": "Database error", "detail": str(e)}), 500
     return jsonify({"status": "events_ingested", "user_id": user_id, "event_count": len(enriched)}), 201
 
 
@@ -256,13 +264,16 @@ def ingest_events():
 def get_health_score(user_id: str):
     recalculate = request.args.get("recalculate", "false").lower() == "true"
 
-    if not recalculate:
-        cached = health_scores_col.find_one({"user_id": user_id}, sort=[("computed_at", DESCENDING)])
-        if cached:
-            return jsonify(_clean(cached)), 200
+    try:
+        if not recalculate:
+            cached = health_scores_col.find_one({"user_id": user_id}, sort=[("computed_at", DESCENDING)])
+            if cached:
+                return jsonify(_clean(cached)), 200
 
-    user_events = list(events_col.find({"user_id": user_id}, {"_id": 0})
-                       .sort("timestamp", DESCENDING).limit(1000))
+        user_events = list(events_col.find({"user_id": user_id}, {"_id": 0})
+                           .sort("timestamp", DESCENDING).limit(1000))
+    except PyMongoError as e:
+        return jsonify({"error": "Database error", "detail": str(e)}), 500
 
     metrics     = HealthScoreEngine.compute_metrics(user_events)
     health_data = HealthScoreEngine.compute_health_score(metrics)
@@ -273,19 +284,28 @@ def get_health_score(user_id: str):
         "health_score": health_data,
         "computed_at": datetime.utcnow().isoformat() + "Z",
     }
-    health_scores_col.insert_one(result)
+    try:
+        health_scores_col.insert_one(result)
+    except PyMongoError as e:
+        return jsonify({"error": "Database error", "detail": str(e)}), 500
     return jsonify(_clean(result)), 200
 
 
 @app.route("/recommendations/<user_id>", methods=["GET"])
 def get_recommendations(user_id: str):
-    health_record = health_scores_col.find_one({"user_id": user_id}, sort=[("computed_at", DESCENDING)])
+    try:
+        health_record = health_scores_col.find_one({"user_id": user_id}, sort=[("computed_at", DESCENDING)])
+    except PyMongoError as e:
+        return jsonify({"error": "Database error", "detail": str(e)}), 500
     if not health_record:
         return jsonify({"error": "No health score found. Compute health score first."}), 404
 
     recs = generate_recommendations(user_id, health_record.get("health_score", {}), health_record.get("metrics", {}))
     recs["user_id"] = user_id
-    recommendations_col.insert_one(recs)
+    try:
+        recommendations_col.insert_one(recs)
+    except PyMongoError as e:
+        return jsonify({"error": "Database error", "detail": str(e)}), 500
     return jsonify(_clean(recs)), 200
 
 
@@ -330,7 +350,10 @@ def get_users_with_gaps():
     if gap_type:
         pipeline[-1]["$match"]["latest_score.engagement_gaps"] = {"$in": [gap_type]}
 
-    results = list(health_scores_col.aggregate(pipeline))
+    try:
+        results = list(health_scores_col.aggregate(pipeline))
+    except PyMongoError as e:
+        return jsonify({"error": "Database error", "detail": str(e)}), 500
     return jsonify({
         "users_with_gaps": [
             {
@@ -349,7 +372,10 @@ def get_users_with_gaps():
 @app.route("/users", methods=["GET"])
 def list_users():
     """Return distinct user IDs that have health scores."""
-    user_ids = health_scores_col.distinct("user_id")
+    try:
+        user_ids = health_scores_col.distinct("user_id")
+    except PyMongoError as e:
+        return jsonify({"error": "Database error", "detail": str(e)}), 500
     return jsonify({"users": user_ids, "count": len(user_ids)}), 200
 
 
