@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Engagement Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body { background: #0b0f1a; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+    /* Gauge arc */
+    .gauge-wrap { position: relative; display: inline-block; }
+    .gauge-val  { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+                  font-size: 2rem; font-weight: 800; color: #f1f5f9; }
+    .gauge-lbl  { font-size: 0.65rem; color: #64748b; margin-top: -4px; }
+
+    /* Skeleton shimmer */
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position:  400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #1e293b 25%, #2d3f55 50%, #1e293b 75%);
+      background-size: 400px 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { animation: spin .7s linear infinite; }
+
+    /* Pill */
+    .pill { display: inline-block; padding: 2px 10px; border-radius: 20px;
+            font-size: 0.68rem; font-weight: 700; }
+    .pill-low    { background: #14532d; color: #86efac; }
+    .pill-medium { background: #713f12; color: #fde68a; }
+    .pill-high   { background: #7f1d1d; color: #fca5a5; }
+
+    /* Tab underline */
+    .tab-btn { transition: color .15s, border-color .15s; }
+    .tab-btn.active { color: #818cf8; border-bottom: 2px solid #818cf8; }
+
+    /* Card hover */
+    .metric-card { transition: transform .15s; }
+    .metric-card:hover { transform: translateY(-2px); }
+
+    /* Toast */
+    #toast { transition: opacity .3s; }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen">
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<header class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center gap-4">
+  <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg"
+       style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">📊</div>
+  <div>
+    <h1 class="text-sm font-bold text-slate-100">User Engagement Platform</h1>
+    <p class="text-xs text-slate-500">Health Scores · Gap Detection · AI Recommendations</p>
+  </div>
+  <div class="ml-auto flex items-center gap-3">
+    <span id="mongoStatus" class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-500">● checking…</span>
+    <span id="openaiStatus" class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-500">● OpenAI</span>
+  </div>
+</header>
+
+<!-- ── Toast ──────────────────────────────────────────────────────────────── -->
+<div id="toast" class="fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-sm font-medium opacity-0 pointer-events-none bg-indigo-600 text-white shadow-lg"></div>
+
+<!-- ── Main ───────────────────────────────────────────────────────────────── -->
+<div class="flex h-[calc(100vh-56px)]">
+
+  <!-- ── Sidebar ── -->
+  <aside class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col overflow-y-auto flex-shrink-0">
+
+    <!-- Ingest Events -->
+    <div class="p-4 border-b border-slate-800">
+      <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Simulate User</p>
+
+      <label class="text-xs text-slate-400 mb-1 block">User ID</label>
+      <input id="userIdInput" type="text" placeholder="e.g. user_42"
+             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200
+                    placeholder-slate-600 focus:outline-none focus:border-indigo-500 mb-2"/>
+
+      <label class="text-xs text-slate-400 mb-1 block">Sessions</label>
+      <input id="sessionCount" type="number" value="5" min="1" max="30"
+             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200
+                    focus:outline-none focus:border-indigo-500 mb-2"/>
+
+      <label class="text-xs text-slate-400 mb-1 block">Days ago (last activity)</label>
+      <input id="daysAgo" type="number" value="2" min="0" max="60"
+             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200
+                    focus:outline-none focus:border-indigo-500 mb-3"/>
+
+      <button onclick="ingestAndAnalyse()"
+              class="w-full py-2 rounded-lg text-sm font-semibold text-white
+                     bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 active:scale-95 transition">
+        ⚡ Ingest &amp; Analyse
+      </button>
+    </div>
+
+    <!-- Load Existing -->
+    <div class="p-4 border-b border-slate-800">
+      <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Load User</p>
+      <input id="loadUserInput" type="text" placeholder="Enter user ID"
+             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200
+                    placeholder-slate-600 focus:outline-none focus:border-indigo-500 mb-2"/>
+      <button onclick="loadUser()"
+              class="w-full py-2 rounded-lg text-sm font-semibold text-slate-300
+                     bg-slate-700 hover:bg-slate-600 active:scale-95 transition">
+        🔍 Load Dashboard
+      </button>
+    </div>
+
+    <!-- Known Users -->
+    <div class="p-4 flex-1">
+      <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Known Users</p>
+      <div id="userList" class="space-y-1 text-sm text-slate-500 italic">loading…</div>
+    </div>
+
+    <!-- Gap Filter -->
+    <div class="p-4 border-t border-slate-800">
+      <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Gap Filter</p>
+      <select id="gapFilter"
+              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300
+                     focus:outline-none focus:border-indigo-500 mb-2">
+        <option value="">All gaps</option>
+        <option value="inactive_week">Inactive &gt; 1 week</option>
+        <option value="low_feature_adoption">Low feature adoption</option>
+        <option value="low_session_count">Low session count</option>
+      </select>
+      <button onclick="loadAtRiskUsers()"
+              class="w-full py-2 rounded-lg text-sm font-semibold text-slate-300
+                     bg-slate-700 hover:bg-slate-600 active:scale-95 transition">
+        ⚠️ At-Risk Users
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Content ── -->
+  <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+    <!-- Loading state -->
+    <div id="loadingState" class="hidden flex flex-col items-center justify-center h-full gap-3 text-slate-500">
+      <div class="spinner w-8 h-8 border-2 border-slate-700 border-t-indigo-500 rounded-full"></div>
+      <p id="loadingMsg" class="text-sm">Fetching data…</p>
+    </div>
+
+    <!-- Empty state -->
+    <div id="emptyState" class="flex flex-col items-center justify-center h-full gap-4 text-slate-600">
+      <div class="text-5xl">📈</div>
+      <p class="text-sm">Enter a User ID and click <span class="text-indigo-400 font-semibold">Ingest &amp; Analyse</span> to begin.</p>
+    </div>
+
+    <!-- Dashboard content (hidden until loaded) -->
+    <div id="dashContent" class="hidden space-y-6">
+
+      <!-- User header -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 id="dashUserId" class="text-lg font-bold text-slate-100"></h2>
+          <p id="dashComputedAt" class="text-xs text-slate-500 mt-0.5"></p>
+        </div>
+        <button onclick="refreshRecommendations()"
+                class="px-4 py-2 rounded-lg text-xs font-semibold text-indigo-300 border border-indigo-700
+                       hover:bg-indigo-900 transition">
+          🤖 Refresh AI Recs
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-6 border-b border-slate-800 text-sm text-slate-500">
+        <button class="tab-btn active pb-2" onclick="switchTab('overview',this)">Overview</button>
+        <button class="tab-btn pb-2"        onclick="switchTab('metrics',this)">Metrics</button>
+        <button class="tab-btn pb-2"        onclick="switchTab('recs',this)">Recommendations</button>
+        <button class="tab-btn pb-2"        onclick="switchTab('trend',this)">Score Trend</button>
+      </div>
+
+      <!-- ── TAB: Overview ── -->
+      <div id="tab-overview" class="space-y-5">
+
+        <!-- Health score gauge + churn -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+          <!-- Gauge -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center col-span-1">
+            <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Health Score</p>
+            <div class="gauge-wrap">
+              <canvas id="gaugeChart" width="180" height="100"></canvas>
+              <div class="gauge-val" id="gaugeVal">—</div>
+            </div>
+            <p class="gauge-lbl mt-1">out of 100</p>
+          </div>
+
+          <!-- Churn risk -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between metric-card">
+            <p class="text-xs text-slate-500 uppercase tracking-widest">Churn Risk</p>
+            <div>
+              <div class="text-4xl font-black mt-3" id="churnScore">—</div>
+              <div class="mt-1" id="churnBadge"></div>
+              <div class="mt-4 h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div id="churnBar" class="h-full rounded-full transition-all duration-700" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Engagement gaps -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 metric-card">
+            <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Engagement Gaps</p>
+            <div id="gapsList" class="space-y-2 text-sm"></div>
+          </div>
+        </div>
+
+        <!-- Component scores radar / bars -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <p class="text-xs text-slate-500 uppercase tracking-widest mb-4">Score Components</p>
+          <canvas id="componentChart" height="90"></canvas>
+        </div>
+      </div>
+
+      <!-- ── TAB: Metrics ── -->
+      <div id="tab-metrics" class="hidden">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="metricsGrid"></div>
+      </div>
+
+      <!-- ── TAB: Recommendations ── -->
+      <div id="tab-recs" class="hidden space-y-4">
+        <div id="recsList" class="space-y-3"></div>
+        <p id="recsModel" class="text-xs text-slate-600 mt-2"></p>
+      </div>
+
+      <!-- ── TAB: Trend ── -->
+      <div id="tab-trend" class="hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <p class="text-xs text-slate-500 uppercase tracking-widest mb-4">Health Score — Last 30 Days</p>
+          <canvas id="trendChart" height="120"></canvas>
+          <p id="trendEmpty" class="text-sm text-slate-600 text-center mt-4 hidden">
+            No trend data yet — re-run analysis a few times to build history.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- At-risk panel -->
+    <div id="atRiskPanel" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-slate-100">⚠️ At-Risk Users</h2>
+        <button onclick="hideAtRisk()" class="text-xs text-slate-500 hover:text-slate-300">✕ Close</button>
+      </div>
+      <div id="atRiskList" class="space-y-2"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   State
+══════════════════════════════════════════════════════════════════════════ */
+let currentUserId  = null;
+let gaugeChartInst = null, componentChartInst = null, trendChartInst = null;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Utilities
+══════════════════════════════════════════════════════════════════════════ */
+function toast(msg, ok=true) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = ok ? '#4f46e5' : '#b91c1c';
+  el.style.opacity = '1';
+  el.style.pointerEvents = 'auto';
+  setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }, 2800);
+}
+
+function setLoading(msg='Loading…') {
+  document.getElementById('emptyState').classList.add('hidden');
+  document.getElementById('dashContent').classList.add('hidden');
+  document.getElementById('atRiskPanel').classList.add('hidden');
+  const ls = document.getElementById('loadingState');
+  ls.classList.remove('hidden');
+  ls.classList.add('flex');
+  document.getElementById('loadingMsg').textContent = msg;
+}
+function stopLoading() {
+  const ls = document.getElementById('loadingState');
+  ls.classList.add('hidden');
+  ls.classList.remove('flex');
+}
+function showDash() {
+  stopLoading();
+  document.getElementById('dashContent').classList.remove('hidden');
+}
+function showEmpty() {
+  stopLoading();
+  document.getElementById('emptyState').classList.remove('hidden');
+}
+
+async function api(url, opts={}) {
+  const r = await fetch(url, { headers: {'Content-Type':'application/json'}, ...opts });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error || r.statusText); }
+  return r.json();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Health check on load
+══════════════════════════════════════════════════════════════════════════ */
+async function checkHealth() {
+  try {
+    const d = await api('/health');
+    document.getElementById('mongoStatus').textContent  = d.mongo_connected  ? '● MongoDB' : '● MongoDB ✗';
+    document.getElementById('mongoStatus').className    = `text-xs px-2 py-1 rounded ${d.mongo_connected  ? 'bg-green-900 text-green-400' : 'bg-red-900 text-red-400'}`;
+    document.getElementById('openaiStatus').textContent = d.openai_configured ? '● OpenAI'  : '● OpenAI (rule-based)';
+    document.getElementById('openaiStatus').className   = `text-xs px-2 py-1 rounded ${d.openai_configured ? 'bg-green-900 text-green-400' : 'bg-yellow-900 text-yellow-500'}`;
+  } catch {}
+}
+
+async function loadUserList() {
+  try {
+    const d = await api('/users');
+    const el = document.getElementById('userList');
+    if (!d.users.length) { el.textContent = 'No users yet.'; return; }
+    el.innerHTML = '';
+    d.users.forEach(uid => {
+      const btn = document.createElement('button');
+      btn.textContent = uid;
+      btn.className = 'w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:bg-slate-800 hover:text-indigo-400 transition truncate';
+      btn.onclick = () => { document.getElementById('loadUserInput').value = uid; loadUser(); };
+      el.appendChild(btn);
+    });
+  } catch {}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Event generation helper
+══════════════════════════════════════════════════════════════════════════ */
+function generateEvents(userId, sessionCount, daysAgo) {
+  const features  = ['dashboard','reports','settings','analytics','export','notifications'];
+  const evTypes   = ['page_view','click','search','download','share'];
+  const events    = [];
+  const baseTime  = new Date(Date.now() - daysAgo * 86400000);
+
+  for (let s = 0; s < sessionCount; s++) {
+    const sessionStart = new Date(baseTime.getTime() - s * 3 * 3600000);
+    const evPerSession = 3 + Math.floor(Math.random() * 6);
+    for (let e = 0; e < evPerSession; e++) {
+      events.push({
+        type:      evTypes[Math.floor(Math.random() * evTypes.length)],
+        feature:   features[Math.floor(Math.random() * features.length)],
+        timestamp: new Date(sessionStart.getTime() + e * 120000).toISOString(),
+        duration:  Math.floor(Math.random() * 300),
+      });
+    }
+  }
+  return events;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Ingest + full pipeline
+══════════════════════════════════════════════════════════════════════════ */
+async function ingestAndAnalyse() {
+  const userId  = document.getElementById('userIdInput').value.trim();
+  const sessions = parseInt(document.getElementById('sessionCount').value) || 5;
+  const daysAgo  = parseInt(document.getElementById('daysAgo').value) || 2;
+
+  if (!userId) { toast('Please enter a User ID.', false); return; }
+
+  setLoading('Ingesting events…');
+  try {
+    const events = generateEvents(userId, sessions, daysAgo);
+    await api('/events', { method:'POST', body: JSON.stringify({ user_id: userId, events }) });
+
+    setLoading('Computing health score…');
+    await api(`/health-score/${userId}?recalculate=true`);
+
+    setLoading('Generating recommendations…');
+    await api(`/recommendations/${userId}`);
+
+    await renderDashboard(userId);
+    toast(`✅ Analysis complete for ${userId}`);
+    loadUserList();
+  } catch(e) {
+    stopLoading(); showEmpty();
+    toast('Error: ' + e.message, false);
+  }
+}
+
+async function loadUser() {
+  const userId = document.getElementById('loadUserInput').value.trim();
+  if (!userId) { toast('Please enter a User ID.', false); return; }
+  setLoading('Loading dashboard…');
+  try {
+    await renderDashboard(userId);
+  } catch(e) {
+    stopLoading(); showEmpty();
+    toast('Error: ' + e.message, false);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Render
+══════════════════════════════════════════════════════════════════════════ */
+async function renderDashboard(userId) {
+  setLoading('Fetching dashboard…');
+  const dash = await api(`/dashboard/${userId}`);
+  currentUserId = userId;
+
+  document.getElementById('dashUserId').textContent   = '👤 ' + userId;
+  document.getElementById('dashComputedAt').textContent = dash.generated_at
+    ? 'Generated: ' + new Date(dash.generated_at).toLocaleString() : '';
+
+  if (dash.health_score) {
+    renderOverview(dash.health_score);
+  }
+  if (dash.metrics) {
+    renderMetrics(dash.metrics);
+  }
+  if (dash.latest_recommendations) {
+    renderRecs(dash.latest_recommendations);
+  }
+  renderTrend(dash.score_trend_30d || []);
+
+  switchTabById('overview');
+  showDash();
+}
+
+/* ── Overview ── */
+function renderOverview(hs) {
+  const score = hs.composite_score;
+  const churn = hs.churn_risk;
+
+  // Gauge
+  document.getElementById('gaugeVal').textContent = score;
+  drawGauge(score);
+
+  // Churn
+  document.getElementById('churnScore').textContent = churn.score.toFixed(1);
+  const badge = document.getElementById('churnBadge');
+  badge.innerHTML = `<span class="pill pill-${churn.level}">${churn.level.toUpperCase()} RISK</span>`;
+  const bar = document.getElementById('churnBar');
+  const barColor = churn.level === 'high' ? '#ef4444' : churn.level === 'medium' ? '#f59e0b' : '#22c55e';
+  bar.style.width = churn.score + '%';
+  bar.style.background = barColor;
+
+  // Gaps
+  const gl = document.getElementById('gapsList');
+  const gaps = hs.engagement_gaps || [];
+  if (!gaps.length) {
+    gl.innerHTML = '<p class="text-green-400 text-sm">✅ No gaps detected</p>';
+  } else {
+    const labels = { inactive_week:'Inactive > 1 week', low_feature_adoption:'Low feature adoption', low_session_count:'Low session count' };
+    gl.innerHTML = gaps.map(g =>
+      `<div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+        <span class="text-amber-300">${labels[g] || g}</span>
+      </div>`
+    ).join('');
+  }
+
+  // Component chart
+  const comp = hs.component_scores;
+  const labels2 = ['Activity','Session Depth','Features','Recency'];
+  const values  = [comp.activity_frequency, comp.session_depth, comp.feature_adoption, comp.recency];
+  const colors  = ['#6366f1','#8b5cf6','#06b6d4','#10b981'];
+
+  if (componentChartInst) componentChartInst.destroy();
+  const ctx = document.getElementById('componentChart').getContext('2d');
+  componentChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels2,
+      datasets: [{ data: values, backgroundColor: colors, borderRadius: 6, borderSkipped: false }],
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color:'#94a3b8', font:{size:11} }, grid:{color:'#1e293b'} },
+        y: { min:0, max:100, ticks:{ color:'#94a3b8', font:{size:11} }, grid:{color:'#1e293b'} },
+      },
+    },
+  });
+}
+
+function drawGauge(score) {
+  if (gaugeChartInst) gaugeChartInst.destroy();
+  const ctx = document.getElementById('gaugeChart').getContext('2d');
+  const filled = score / 100;
+  const color  = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444';
+  gaugeChartInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [filled, 1 - filled],
+        backgroundColor: [color, '#1e293b'],
+        borderWidth: 0,
+        circumference: 180,
+        rotation: 270,
+      }],
+    },
+    options: { cutout: '75%', plugins: { legend:{display:false}, tooltip:{enabled:false} } },
+  });
+}
+
+/* ── Metrics ── */
+function renderMetrics(metrics) {
+  const defs = [
+    { key:'total_sessions',           label:'Total Sessions',          icon:'🔁', fmt: v=>v },
+    { key:'total_events',             label:'Total Events',            icon:'📌', fmt: v=>v },
+    { key:'avg_session_duration',     label:'Avg Session (s)',         icon:'⏱', fmt: v=>v.toFixed(1) },
+    { key:'unique_features',          label:'Features Used',           icon:'🧩', fmt: v=>v },
+    { key:'days_since_last_activity', label:'Days Since Active',       icon:'📅', fmt: v=>v },
+    { key:'events_per_session',       label:'Events / Session',        icon:'⚡', fmt: v=>v.toFixed(1) },
+  ];
+  const grid = document.getElementById('metricsGrid');
+  grid.innerHTML = defs.map(d =>
+    `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 metric-card">
+      <p class="text-xs text-slate-500 uppercase tracking-widest">${d.icon} ${d.label}</p>
+      <p class="text-3xl font-black mt-3 text-slate-100">${d.fmt(metrics[d.key] ?? 0)}</p>
+    </div>`
+  ).join('');
+}
+
+/* ── Recommendations ── */
+function renderRecs(recs, model='') {
+  const impacts = { high:'bg-green-900 text-green-400', medium:'bg-yellow-900 text-yellow-400', low:'bg-slate-700 text-slate-400' };
+  document.getElementById('recsList').innerHTML = recs.map((r,i) =>
+    `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex gap-4">
+      <div class="w-8 h-8 rounded-lg bg-indigo-900 text-indigo-300 flex items-center justify-center text-sm font-bold flex-shrink-0">${i+1}</div>
+      <div>
+        <p class="text-sm text-slate-200">${r.action}</p>
+        <span class="pill mt-2 inline-block ${impacts[r.expected_impact] || impacts.low}">${(r.expected_impact||'—').toUpperCase()} IMPACT</span>
+      </div>
+    </div>`
+  ).join('');
+  if (model) document.getElementById('recsModel').textContent = 'Model: ' + model;
+}
+
+async function refreshRecommendations() {
+  if (!currentUserId) return;
+  setLoading('Generating recommendations…');
+  try {
+    const d = await api(`/recommendations/${currentUserId}`);
+    renderRecs(d.recommendations, d.model);
+    switchTabById('recs');
+    showDash();
+    toast('Recommendations refreshed');
+  } catch(e) {
+    stopLoading(); showDash();
+    toast('Error: ' + e.message, false);
+  }
+}
+
+/* ── Trend ── */
+function renderTrend(trend) {
+  const empty = document.getElementById('trendEmpty');
+  if (!trend.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  if (trendChartInst) trendChartInst.destroy();
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  trendChartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: trend.map(r => new Date(r.date).toLocaleDateString()),
+      datasets: [{
+        label: 'Health Score',
+        data: trend.map(r => r.score),
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,.15)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#6366f1',
+        pointRadius: 4,
+      }],
+    },
+    options: {
+      plugins: { legend:{ display:false } },
+      scales: {
+        x: { ticks:{ color:'#94a3b8', font:{size:11} }, grid:{ color:'#1e293b' } },
+        y: { min:0, max:100, ticks:{ color:'#94a3b8', font:{size:11} }, grid:{ color:'#1e293b' } },
+      },
+    },
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   At-risk panel
+══════════════════════════════════════════════════════════════════════════ */
+async function loadAtRiskUsers() {
+  const gap = document.getElementById('gapFilter').value;
+  setLoading('Fetching at-risk users…');
+  try {
+    const url = '/users/gaps' + (gap ? `?gap_type=${gap}` : '');
+    const d   = await api(url);
+    stopLoading();
+    document.getElementById('dashContent').classList.add('hidden');
+    document.getElementById('emptyState').classList.add('hidden');
+
+    const panel = document.getElementById('atRiskPanel');
+    panel.classList.remove('hidden');
+
+    const churnColors = { high:'text-red-400', medium:'text-amber-400', low:'text-green-400' };
+    document.getElementById('atRiskList').innerHTML = !d.users_with_gaps.length
+      ? '<p class="text-slate-500 text-sm">No at-risk users found.</p>'
+      : d.users_with_gaps.map(u =>
+          `<div class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 flex items-center justify-between cursor-pointer hover:border-indigo-700 transition"
+                onclick="document.getElementById('loadUserInput').value='${u.user_id}'; hideAtRisk(); loadUser();">
+            <div>
+              <p class="text-sm font-semibold text-slate-200">${u.user_id}</p>
+              <p class="text-xs text-slate-500 mt-0.5">${(u.gaps||[]).join(' · ') || 'no gaps'}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-lg font-black ${churnColors[u.churn_risk?.level]||'text-slate-400'}">${u.health_score}</p>
+              <p class="text-xs text-slate-500">score</p>
+            </div>
+          </div>`
+        ).join('');
+    toast(`Found ${d.count} at-risk user(s)`);
+  } catch(e) {
+    stopLoading(); showEmpty();
+    toast('Error: ' + e.message, false);
+  }
+}
+function hideAtRisk() {
+  document.getElementById('atRiskPanel').classList.add('hidden');
+  if (currentUserId) showDash(); else showEmpty();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Tabs
+══════════════════════════════════════════════════════════════════════════ */
+const TAB_IDS = ['overview','metrics','recs','trend'];
+function switchTab(id, btn) {
+  TAB_IDS.forEach(t => {
+    document.getElementById('tab-' + t)?.classList.add('hidden');
+  });
+  document.getElementById('tab-' + id)?.classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+function switchTabById(id) {
+  const btn = [...document.querySelectorAll('.tab-btn')].find(b => b.textContent.toLowerCase().includes(id));
+  switchTab(id, btn);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Init
+══════════════════════════════════════════════════════════════════════════ */
+checkHealth();
+loadUserList();
+</script>
+</body>
+</html>
